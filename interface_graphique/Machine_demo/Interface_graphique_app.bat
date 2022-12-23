@@ -1,0 +1,2 @@
+python script_pythons\interface_graphique.py
+PAUSE

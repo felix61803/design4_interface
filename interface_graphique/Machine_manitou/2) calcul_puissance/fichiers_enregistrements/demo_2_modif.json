@@ -1,0 +1,15 @@
+{
+      "config_nb_sc": 1,
+      "config_y_place_sc": 120,
+      "config_x_place_sc": [
+            40,
+            120,
+            250,
+            380,
+            900
+      ],
+      "sous_cycle 1": {
+            "sous_cycles_descriptions_1": "Torque x RPM (puissance)",
+            "math_entry_1": "C1*C2/9.5488"
+      }
+}

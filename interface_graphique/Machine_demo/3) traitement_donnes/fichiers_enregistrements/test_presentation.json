@@ -1,0 +1,25 @@
+{
+      "all_paths": {
+            "part_1_json_name": "test_presentation.json",
+            "part_2_json_name": "test_presentation_calcul_puissance.json",
+            "name_of_the_interface_3_file": "test_presentation.json",
+            "path_to_json_interface_part_1": "c:\\Users\\felix\\Desktop\\Design4\\Design_4\\interface_graphique\\Machine_demo\\1) setup_donnees\\fichiers_enregistrements\\test_presentation.json",
+            "path_to_json_interface_part_2": "c:\\Users\\felix\\Desktop\\Design4\\Design_4\\interface_graphique\\Machine_demo\\2) calcul_puissance\\fichiers_enregistrements\\test_presentation_calcul_puissance.json",
+            "path_to_json_traitement": "c:\\Users\\felix\\Desktop\\Design4\\Design_4\\interface_graphique\\Machine_demo\\3) traitement_donnes\\fichiers_enregistrements\\default_test_presentation_traitement_puissance_Nov_27_2022.json",
+            "path_to_taille_interface_3": "c:\\Users\\felix\\Desktop\\Design4\\Design_4\\interface_graphique\\Machine_demo\\3) traitement_donnes\\fichiers_enregistrements\\z_taille_interface_3.json",
+            "path_to_converted_data_interface_Part_1": "c:\\Users\\felix\\Desktop\\Design4\\Design_4\\interface_graphique\\Machine_demo\\1) setup_donnees\\fichiers_enregistrements\\z_test_presentation_can_converti.csv",
+            "path_to_sous_cycle_data_interface_Part_2": "c:\\Users\\felix\\Desktop\\Design4\\Design_4\\interface_graphique\\Machine_demo\\2) calcul_puissance\\fichiers_enregistrements\\z_test_presentation_calcul_puissance_sous_cycle_puissance.csv",
+            "path_to_converted_cycle_puissance": "c:\\Users\\felix\\Desktop\\Design4\\Design_4\\interface_graphique\\Machine_demo\\3) traitement_donnes\\fichiers_enregistrements\\z_test_presentation_cycle_puissance_totale.csv",
+            "path_to_folder": "c:\\Users\\felix\\Desktop\\Design4\\Design_4\\interface_graphique\\Machine_demo\\3) traitement_donnes\\fichiers_enregistrements\\",
+            "path_to_suppressed_cycle_file": "init",
+            "path_to_suppressed_sous_cycle_file": "init",
+            "path_fluxVideo": "C:/Users/felix/Desktop/Design4/Design_4/interface_graphique/Machine_demo/donnees_recoltees_machine/zip_lol/FluxVideo",
+            "path_camera_1": "C:/Users/felix/Desktop/Design4/Design_4/interface_graphique/Machine_demo/donnees_recoltees_machine/zip_lol/FluxVideo\\Camera1",
+            "path_camera_2": "C:/Users/felix/Desktop/Design4/Design_4/interface_graphique/Machine_demo/donnees_recoltees_machine/zip_lol/FluxVideo\\Camera2",
+            "path_to_gps_file": "C:/Users/felix/Desktop/Design4/Design_4/interface_graphique/Machine_demo/donnees_recoltees_machine/zip_lol/GPS.csv"
+      },
+      "calculs": "oui",
+      "affichage": "oui",
+      "photo_loader": "oui",
+      "gps_loader": "oui"
+}

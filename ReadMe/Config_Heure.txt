@@ -1,0 +1,28 @@
+Pour configurer le module d'horloge rtc :
+
+Activater le i2c pour la rpi
+
+Verifier le fonctionnement du module :
+Dans le terminal :
+	sudo i2cdetect -y 1
+	Si le tableau est occupe par un 68 le module fonctionne
+
+Dans le terminal :
+	sudo vi /boot/config.txt
+	
+Un logiciel de traitement de texte en Vi s<ouvre
+	A la fin du fichier taper 'o' pour pouvoir ecrire une ligne
+	Ecrire : 'dtoverlay=i2c-rtc,ds3231'
+	Appuyer sur echap pour sortir de la ligne
+	faire ':wq' pour sauvegarder
+	
+Dans le terminal :
+	sudo reboot
+	A la reouverture de nouveau dans le terminal,
+	sudo date
+	sudo hwclock -r
+	Si les deux donn/es ne match pas faire :
+	sudo hwclock -w quand la rpi est en ligne pour initialiser l heure sur le module
+	
+	sudo i2cdetect -y -1 pour verifier que le module fonctionne, il y aura un 
+	'UU' a la place 68 du tableau.

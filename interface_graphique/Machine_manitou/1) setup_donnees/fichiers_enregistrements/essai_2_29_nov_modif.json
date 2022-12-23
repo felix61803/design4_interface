@@ -1,0 +1,129 @@
+{
+      "config_nb_func": 1,
+      "config_y_place_func": 390,
+      "config_x_place_func": [
+            40,
+            120,
+            250,
+            380
+      ],
+      "config_y_place_sens": 390,
+      "config_x_place_sens": [
+            120,
+            200,
+            450,
+            550,
+            670,
+            820,
+            950
+      ],
+      "function 1": {
+            "funcs_description_1": "traction",
+            "config_nb_sens": 10,
+            "sensor 1": {
+                  "num_capt": "func: 1. Capt: 1",
+                  "capts_description": "torque (1000%)",
+                  "type_channel": "Analogique",
+                  "can_adress": "0x180601fd",
+                  "can_data": [
+                        "0",
+                        "1"
+                  ],
+                  "range_type": "0 a 100%",
+                  "value_of_100": "318"
+            },
+            "sensor 2": {
+                  "num_capt": "func: 1. Capt: 2",
+                  "capts_description": "rpm",
+                  "type_channel": "Analogique",
+                  "can_adress": "0x180601fd",
+                  "can_data": [
+                        "2",
+                        "3"
+                  ],
+                  "range_type": "direct",
+                  "value_of_100": "1"
+            },
+            "sensor 3": {
+                  "num_capt": "func: 1. Capt: 3",
+                  "capts_description": "friction_nominal",
+                  "type_channel": "Analogique",
+                  "can_adress": "0x180603fd",
+                  "can_data": [
+                        "0",
+                        "1"
+                  ],
+                  "range_type": "-100 a 100%",
+                  "value_of_100": "10000"
+            },
+            "sensor 4": {
+                  "num_capt": "func: 1. Capt: 4",
+                  "capts_description": "perte_parasite",
+                  "type_channel": "Analogique",
+                  "can_adress": "0x180603fd",
+                  "can_data": [
+                        "2",
+                        "3"
+                  ],
+                  "range_type": "-100 a 100%",
+                  "value_of_100": "10000"
+            },
+            "sensor 5": {
+                  "num_capt": "func: 1. Capt: 5",
+                  "capts_description": "engin_fuel_rate (L/h)",
+                  "type_channel": "Analogique",
+                  "can_adress": "0x180605fd",
+                  "can_data": [
+                        "0",
+                        "3"
+                  ],
+                  "range_type": "0 a 100%",
+                  "value_of_100": "321275"
+            },
+            "sensor 6": {
+                  "num_capt": "func: 1. Capt: 6",
+                  "capts_description": "instant_ecom (Km/L)",
+                  "type_channel": "Analogique",
+                  "can_adress": "0x180605fd",
+                  "can_data": [
+                        "4",
+                        "7"
+                  ],
+                  "range_type": "0 a 100%",
+                  "value_of_100": "12550"
+            },
+            "sensor 7": {
+                  "num_capt": "func: 1. Capt: 7",
+                  "capts_description": "aver_ecom (Km/L)",
+                  "type_channel": "Analogique",
+                  "can_adress": "0x180606fd",
+                  "can_data": [
+                        "0",
+                        "3"
+                  ],
+                  "range_type": "0 a 100%",
+                  "value_of_100": "12550"
+            },
+            "sensor 8": {
+                  "num_capt": "func: 1. Capt: 8",
+                  "capts_description": "high_res_trip_fuel(mL)",
+                  "type_channel": "Analogique",
+                  "can_adress": "0x180609fd",
+                  "can_data": [
+                        "0",
+                        "3"
+                  ],
+                  "range_type": "0 a 100%",
+                  "value_of_100": "4211081.215"
+            },
+            "sensor 9": {
+                  "num_capt": "func: 1. Capt: 9",
+                  "capts_description": "pedal_acceleration",
+                  "type_channel": "Digital",
+                  "can_adress": "0x180600fd",
+                  "can_data": "0b0",
+                  "range_type": "digital",
+                  "value_of_100": "20"
+            }
+      }
+}

@@ -1,0 +1,43 @@
+Sub Macro1()
+'
+' Macro1 Macro
+'
+Dim file_open As Variant
+file_open = Application.GetOpenFilename(Title:="chercher le fichier % importer range", FileFilter:="Excel Files(*.csv),*csv*")
+
+Set sf = CreateObject("Scripting.FileSystemObject")
+Set fi = sf.opentextfile(file_open)
+Value = fi.readline
+ValAll = fi.ReadAll
+list_split = Split(ValAll, vbCrLf)
+Count = 0
+Dim i As Integer
+i = 8
+
+For Each Lin In list_split
+Count = Count + 1
+
+Next Lin
+Cells(10, 12).Value = Count
+For a = 0 To Count - 2
+i = i + 1
+arr = Split(list_split(a), ",")
+Cells(i, 7).Value = arr(0)
+Cells(i, 8).Value = arr(1)
+Cells(i, 9).Value = arr(2)
+Next a
+
+Dim j As Integer
+Dim Line
+j = Cells(10, 12).Value + 8
+
+For Line = j To 1048576
+If IsEmpty(Cells(Line, 7).Value) = True Then
+
+    Exit For
+    End If
+
+Next
+Range(Cells(Cells(10, 12).Value + 8, 7), Cells(Line, 9)).ClearContents
+
+End Sub
