@@ -24,7 +24,7 @@ from PIL import Image,ImageTk
 import glob
 
 
-def interface_part_3(json_name_file, json_name_file_part_2,win_2):
+def interface_part_3(json_name_file, json_name_file_part_2,win_2=None):
     init_nb_sous_cycle = 0
     init_config_y_sous_cycle = 60
     init_config_x_sous_cycle = [40, 120, 250, 380, 900]
@@ -148,7 +148,7 @@ def interface_part_3(json_name_file, json_name_file_part_2,win_2):
         the_frame_level_2 = Toplevel(the_frame, padx=125, pady=130)    
         scrol_height = Label(the_frame_level_2,text='entrez la largeur',fg="white",bg="blue") #Select title
         ent_scrol = Entry(the_frame_level_2, width=20)
-        ent_scrol.insert(0,data_2['windows_scrol_height'])
+        ent_scrol.insert(0,data_2["windows_scrol_height"])
         button = Button(the_frame_level_2, text="terminer", command=lambda : get_scrol_ent_button_level_2(name_file, ent_scrol, the_frame_level_2))
         button2 = Button(the_frame_level_2, text="remettre les paramètres par défault", command=lambda : get_scrol_ent_button2_level_2(ent_scrol, y_def))
 
@@ -740,6 +740,8 @@ def interface_part_3(json_name_file, json_name_file_part_2,win_2):
 
             with open(dico_all_path["path_to_json_traitement"], 'w') as file:
                 json.dump(data, file, indent = 6)
+
+            print("Premier deleteeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
         
         elif data["all_paths"]["path_to_suppressed_cycle_file"] == "delete":
 
@@ -762,25 +764,26 @@ def interface_part_3(json_name_file, json_name_file_part_2,win_2):
             dico_line_and_time.clear()
             dico_data_acquisition.clear()
             dico_data_acquisition["Date(s) d'acquisition"] = []
-            count = 1
-            with open(path_to_suppress_total_cycle, newline='') as csvfile:
-                reader = csv.DictReader(csvfile)
-                for line in reader:
-                    dico_line_and_time["%s"%(count)] = line["Time"]
-                    get_only_date = line["Time"].split("_")
-                    if get_only_date[0] not in dico_data_acquisition["Date(s) d'acquisition"]:
-                        dico_data_acquisition["Date(s) d'acquisition"].append(get_only_date[0])
-                    count+=1
-
             with open(path_to_suppress_total_cycle, newline='') as csvfile:
                 reader = csv.DictReader(csvfile)
                 count_line = 1
                 all_line_list = []
                 for line in reader:
-                    #print(line)
-                    if count_line+1 not in thisx_del:
-                        all_line_list.append(line)                  
+                    all_line_list.append(line) 
+                    dico_line_and_time["%s"%(count_line)] = line["Time"]
+                    get_only_date = line["Time"].split("_")
+                    if get_only_date[0] not in dico_data_acquisition["Date(s) d'acquisition"]:
+                        dico_data_acquisition["Date(s) d'acquisition"].append(get_only_date[0])
                     count_line += 1
+
+            #with open(path_to_suppress_total_cycle, newline='') as csvfile:
+            #    reader = csv.DictReader(csvfile)
+            #    count_line = 1
+            #    all_line_list = []
+            #    for line in reader:
+            #        #print(line)
+            #        all_line_list.append(line)                  
+            #        count_line += 1
             print("nb_ligne_cycle",len(all_line_list))
 
 
@@ -803,6 +806,8 @@ def interface_part_3(json_name_file, json_name_file_part_2,win_2):
 
             with open(dico_all_path["path_to_json_traitement"], 'w') as file:
                 json.dump(data, file, indent = 6)
+
+            print("autre deleteeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
 
         data["Date(s)"] = dico_data_acquisition["Date(s) d'acquisition"]
         
@@ -832,6 +837,8 @@ def interface_part_3(json_name_file, json_name_file_part_2,win_2):
 
             with open(dico_all_path["path_to_json_traitement"], 'w') as file:
                 json.dump(data, file, indent = 6)
+            
+            print("premier deleteeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
 
         elif data["all_paths"]["path_to_suppressed_sous_cycle_file"] == "delete":
             with open(path_to_suppress_sous_cycle, newline='') as csvfile:
@@ -840,8 +847,7 @@ def interface_part_3(json_name_file, json_name_file_part_2,win_2):
                 all_line_list = []
                 for line in reader:
                     #print(line)
-                    if count_line+1 not in thisx_del:
-                        all_line_list.append(line)                  
+                    all_line_list.append(line)                  
                     count_line += 1
             print("nb_ligne_sous_cycle",len(all_line_list))
 
@@ -862,6 +868,8 @@ def interface_part_3(json_name_file, json_name_file_part_2,win_2):
 
             with open(dico_all_path["path_to_json_traitement"], 'w') as file:
                 json.dump(data, file, indent = 6)
+
+            print("autre deleteeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
 
         #list_indication.append("Enregistrement effectué sans problème dans : z_sous_cycle_apres_suppression.csv")
         #dico_all_error_message["indication"] =list_indication
@@ -1928,7 +1936,7 @@ def interface_part_3(json_name_file, json_name_file_part_2,win_2):
 
     windows_height_x = int(GetSystemMetrics(0))-20
     windows_height_y = int(GetSystemMetrics(1))-150
-    windows_scrol_height = int(GetSystemMetrics(1))
+    windows_scrol_height = int(GetSystemMetrics(1)+300)
 
     today = datetime.datetime.now()
     today_format = today.strftime("%b_%d_%Y")
@@ -2250,6 +2258,6 @@ def interface_part_3(json_name_file, json_name_file_part_2,win_2):
     tk.mainloop()
 
 if __name__ == "__main__":
-    print("Cette fonction ne devrait être lancé que par le bouton de l'interface graphique")
-    #interface_part_3("essai_2_29_nov.json","essai_2_29_nov_test.json")
+    #print("Cette fonction ne devrait être lancé que par le bouton de l'interface graphique")
+    interface_part_3("essai_2_29_nov_modif.json","demo_2_modif.json")
     

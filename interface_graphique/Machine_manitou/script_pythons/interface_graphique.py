@@ -8,6 +8,8 @@ import datetime
 from unicodedata import name
 from win32api import GetSystemMetrics
 from numpy import genfromtxt
+from numpy import array
+from numpy import ndarray
 import calcul_cycle_puissace_interface as interface_2
 import shutil
 from distutils.dir_util import copy_tree
@@ -48,7 +50,8 @@ list_assertion = []
 error_for_rpi = []
 error_import_can = []
 invalide_entry = []
-dico_all_error_message = {"assertions_partie_1":list_assertion,"for_rpi":error_for_rpi, "import_can":error_import_can, "invalide_entry":invalide_entry}
+list_indication = []
+dico_all_error_message = {"assertions_partie_1":list_assertion,"for_rpi":error_for_rpi, "import_can":error_import_can, "invalide_entry":invalide_entry,"indication":list_indication}
 dico_scrollbar = {}
 
 dico_file_name = {"filename":None, "path_to_file":None, "taille_interface_file":None, "path_to_folder":None, "path_to_parent_folder":None, "Path_to_machine_folder":None,"Path_to_interface_folder":None}
@@ -1607,6 +1610,10 @@ def convert_all_data():
 
         try:
             my_data = genfromtxt(data_csv, delimiter=',', names=True, usecols=tuple(header_without_time), unpack=True)
+            print("my_dataaaaaaaaaaaaaaaaaaaaaaaaaa",my_data)
+            if type(my_data[0]) != ndarray:
+                my_data = [array(my_data)]
+                print(my_data)
         except ValueError as e:
             error_import_can.append("erreur dans le fichier CAN: %s"%(e))
             dico_all_error_message["import_can"] = error_import_can
@@ -1623,7 +1630,14 @@ def convert_all_data():
         all_formul_list = []
         for i in range(len(header_without_time)):
             print(i)
-            dic[associate_with_sensor_list[i][4]] = my_data[i]
+            try:
+                dic[associate_with_sensor_list[i][4]] = my_data[i]
+            except IndexError:
+                error_import_can.append("Le nombre de capteurs provenant du fichier CAN.csv et celui sur l'interface ne correspondent pas")
+                dico_all_error_message["import_can"] = error_import_can
+                break
+
+
             convert_bit_to_value = None
             if associate_with_sensor_list[i][1][1] == "A":
                 find_bytes = associate_with_sensor_list[i][1][0]
@@ -1660,8 +1674,9 @@ def convert_all_data():
 
         list_of_all_array = []
         nb_line = []
+        print("les formules: ",all_formul_list)
+        print(dic)
         for formul in all_formul_list:
-
             list_of_all_array.append(eval(formul,dic))
             nb_line.append(len(list_of_all_array[0]))
         print("vecteur des nombre de ligne par colonne : ", nb_line)
@@ -1674,8 +1689,11 @@ def convert_all_data():
             error_import_can.append("Les vecteurs colonnes représentant les donnees dans le temps doivent avoir le même nombre de donnees. Or, un ou plusieurs capteurs ont un nombre de donnees different des autres")
             dico_all_error_message["import_can"] = error_import_can
             fenetre_erreur(dico_all_error_message["import_can"],"import_can")
+            
+        if dico_all_error_message["import_can"] != []:
+            fenetre_erreur(dico_all_error_message["import_can"],"import_can")
             return None
-        
+
         validate_all_entry()
         if dico_all_error_message["invalide_entry"] != []:
             fenetre_erreur(dico_all_error_message["invalide_entry"],"invalide_entry")
@@ -1729,6 +1747,10 @@ def convert_all_data():
 
                 writer.writerow(dico_with_all_can_data_converted)
 
+        list_indication = ["CAN importé","Enregistrement effectué sans problème dans : %s"%("z_" + name_file_without_extention[0] +'_can_converti.csv')]
+        dico_all_error_message["indication"] =list_indication
+            
+        fenetre_erreur(dico_all_error_message["indication"],"indication", is_indication=True)
 
         print("Enregistrement effectué sans problème dans : %s"%("z_" + name_file_without_extention[0] +'_can_converti.csv'))
     else:
@@ -1846,7 +1868,7 @@ def end_error_message(win,list):
     dico_all_error_message[list].clear()
     win.destroy()
 
-def fenetre_erreur(message_error_list,list):
+def fenetre_erreur(message_error_list,list,is_indication=False):
     
     with open(dico_file_name["taille_interface_file"], "r") as f:
         data_2 = json.load(f)
@@ -1857,9 +1879,10 @@ def fenetre_erreur(message_error_list,list):
     #txt.grid(row = 0, column = 0)
     text_box.place(x=0, y=0)
     
-    text_box.insert(END, "Attention les erreurs suivantes sont survenues:")
-    text_box.insert(END,"\n")
-    text_box.insert(END,"\n")
+    if is_indication == False:
+        text_box.insert(END, "Attention les erreurs suivantes sont survenues:")
+        text_box.insert(END,"\n")
+        text_box.insert(END,"\n")
     for message in message_error_list:
         text_box.insert(END, message)
         text_box.insert(END,"\n")

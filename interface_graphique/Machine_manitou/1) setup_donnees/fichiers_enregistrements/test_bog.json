@@ -1,0 +1,48 @@
+{
+      "config_nb_func": 1,
+      "config_y_place_func": 180,
+      "config_x_place_func": [
+            40,
+            120,
+            250,
+            380
+      ],
+      "config_y_place_sens": 180,
+      "config_x_place_sens": [
+            120,
+            200,
+            450,
+            550,
+            670,
+            820,
+            950
+      ],
+      "function 1": {
+            "funcs_description_1": "traction",
+            "config_nb_sens": 2,
+            "sensor 1": {
+                  "num_capt": "func: 1. Capt: 1",
+                  "capts_description": "torque",
+                  "type_channel": "Analogique",
+                  "can_adress": "0x180601fd",
+                  "can_data": [
+                        "0",
+                        "1"
+                  ],
+                  "range_type": "0 a 100%",
+                  "value_of_100": "318"
+            },
+            "sensor 2": {
+                  "num_capt": "func: 1. Capt: 2",
+                  "capts_description": "RPM",
+                  "type_channel": "Analogique",
+                  "can_adress": "0x180601fd",
+                  "can_data": [
+                        "2",
+                        "3"
+                  ],
+                  "range_type": "direct",
+                  "value_of_100": "1"
+            }
+      }
+}

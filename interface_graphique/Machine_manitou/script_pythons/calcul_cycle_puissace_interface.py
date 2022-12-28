@@ -7,6 +7,8 @@ import datetime
 from unicodedata import name
 from win32api import GetSystemMetrics
 from numpy import genfromtxt
+from numpy import array
+from numpy import ndarray
 import os
 import traitement_graphique as interface_3
 
@@ -33,7 +35,8 @@ def interface_part_2(json_name_file,win_1):
     list_assertion = []
     list_error_calculer = []
     invalide_entry = []
-    dico_all_error_message = {"assertions_partie_2":list_assertion,"calculer":list_error_calculer, "invalide_entry":invalide_entry}
+    list_indication = []
+    dico_all_error_message = {"assertions_partie_2":list_assertion,"calculer":list_error_calculer, "invalide_entry":invalide_entry,"indication":list_indication}
 
     def find_the_config_file_path(date):
 
@@ -643,8 +646,12 @@ def interface_part_2(json_name_file,win_1):
         my_data = genfromtxt(dico_all_path["path_to_converted_data_interface_Part_1"], delimiter=',', names=True, usecols=tuple(header_without_time), unpack=True)
         #print(my_data)
         dic = {}
-        for i in range(len(header_without_time)):
-            dic[header_without_time[i]] = my_data[i]
+        if type(my_data[0]) == ndarray:
+            for i in range(len(header_without_time)):
+                dic[header_without_time[i]] = my_data[i]
+        else:
+            dic[header_without_time[0]] = array(my_data)
+
         return (header_without_time,dic)
 
     
@@ -762,6 +769,11 @@ def interface_part_2(json_name_file,win_1):
 
                 writer.writerow(dico_with_all_can_data_converted)
 
+        list_indication = ["Enregistrement effectué sans problème dans : %s"%(dico_all_path["path_to_converted_sous_cycle_puissance"])]
+        dico_all_error_message["indication"] =list_indication
+            
+        fenetre_erreur(dico_all_error_message["indication"],"indication", is_indication=True)
+        
         print("Enregistrement effectué sans problème dans : ", dico_all_path["path_to_converted_sous_cycle_puissance"])
 
 
@@ -800,7 +812,7 @@ def interface_part_2(json_name_file,win_1):
         dico_all_error_message[list].clear()
         win.destroy()
 
-    def fenetre_erreur(message_error_list,list,win1=None):
+    def fenetre_erreur(message_error_list,list,win1=None,is_indication=False):
         
         with open(dico_all_path["path_to_taille_interface_2"], "r") as f:
             data_2 = json.load(f)
@@ -813,10 +825,11 @@ def interface_part_2(json_name_file,win_1):
         text_box = Text(the_frame_level_2,height=int(data_2["windows_length"]/22), width=int(data_2["windows_width"]/12)) #Select title
         #txt.grid(row = 0, column = 0)
         text_box.place(x=0, y=0)
-        
-        text_box.insert(END, "Attention les erreurs suivantes sont survenues:")
-        text_box.insert(END,"\n")
-        text_box.insert(END,"\n")
+
+        if is_indication == False:
+            text_box.insert(END, "Attention les erreurs suivantes sont survenues:")
+            text_box.insert(END,"\n")
+            text_box.insert(END,"\n")
         for message in message_error_list:
             text_box.insert(END, message)
             text_box.insert(END,"\n")
@@ -1036,7 +1049,7 @@ def interface_part_2(json_name_file,win_1):
     selection_bar = Menu(tk)
     filemenu = Menu(selection_bar, tearoff=0)
     selection_bar.add_cascade(label="Fichier", menu=filemenu)
-    filemenu.add_command(label="Nouvelle fonction", command=add_function)
+    filemenu.add_command(label="Nouveau sous cycle", command=add_function)
     filemenu.add_command(label="Ouvrir...", command=select_file)
     filemenu.add_command(label="Enregistrer", command=get_all_entry)
     filemenu.add_command(label="Enregistrer sous...", command=save_in_to_file)
