@@ -50,7 +50,7 @@ dico_file_name = {"filename":None, "path_to_file":None, "taille_interface_file":
 
 Can_tram_type = ["Digital", "Analogique"]
 Can_tram_list = ["1", "2","3","4","5","6","7","8","9","10","11","12","13","14","15", "16", "17", "18", "19", "20", "21", "22", "23", "24"]
-Can_range_analogique = ["0 a 100%","-100 a 100%"]
+Can_range_analogique = ["0 a 100%","-100 a 100%","direct"]
 Can_nb_bytes_1 = ["0","1", "2","3","4","5","6"]
 Can_nb_bytes_2 = ["1", "2","3","4","5","6","7"]
 Can_digital_bit = ["0","1", "2","3","4","5","6","7"]
@@ -180,6 +180,8 @@ def add_machine():
     os.mkdir(file + "\\donnees_recoltees_machine")
     os.mkdir(file + "\\fichier_pour_calculateur")
     os.mkdir(file + "\\fichier_pour_la_rpi")
+    os.mkdir(file + "\\rapports")
+    os.mkdir(file + "\\rapports\\images")
 
 
 def add_function():
@@ -672,126 +674,140 @@ def can_channel_type(val, num_fonc, num_capteur, coming_from=None):
 
     with open(dico_file_name["path_to_file"], 'r') as f:
         data = json.load(f)
-    if coming_from != "open":
-        data['config_y_place_func'] = init_config_y_func
-        data['config_x_place_func'] = init_config_x_func
-        data['config_y_place_sens'] = init_config_y_sens
-        data['config_x_place_sens'] = init_config_x_sens
 
-    data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["type_channel"] = channel_type
+    do_nothing = False
 
-    with open(dico_file_name["path_to_file"], 'w') as file:
-        json.dump(data, file, indent = 6)
-    
-    if channel_type == "Analogique":
-        print("oui1")
-        print(data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["range_type"])
-        print("coming_from")
-# Cette condition sert à supprimé les entreée pour les capteur analogique si la fonction digital est sélectionné à la place 
-# lorsque qu'une interface est loadée
-        if (data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["range_type"] == "digital") and (coming_from == "new"):
-            print("oui2")
-            dico_byte_from_digital["can_data_%s"%(nb_capteur[1])].destroy()
-            dico_bit_from_digital["can_data_%s"%(nb_capteur[1])].destroy()
+    if (data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["type_channel"] == channel_type) and (coming_from == "new"):
+        do_nothing = True
 
-            data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"] = [None,None]
-            data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["range_type"] = "analog"
-            with open(dico_file_name["path_to_file"], 'w') as file:
-                json.dump(data, file, indent = 6)
-
-# Cette condition sert à supprimé les entreée pour les capteur analogique si la fonction digital est sélectionné à la place 
-# lorsque qu'une nouvelle interface est crée
-        elif coming_from == "new":
-            data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"] = [None,None]
-            data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["range_type"] = "analog"
-            with open(dico_file_name["path_to_file"], 'w') as file:
-                json.dump(data, file, indent = 6)
-
-        elif coming_from == "open":
-            if data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"][0] == None:
-                data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"][0] ="byte 1"
-
-            if data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"][1] == None:
-                data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"][1] ="byte 2"
-
-        #print("entrer dans la fonction")
-        can_data_type_1 = StringVar(the_frame)
-        can_data_type_1.set("byte 1")
-        print(coming_from)
-        #print(type(data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"]) == list)
-        #print(data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"])
+    if do_nothing == False:
         
-        if (coming_from == "open") and (type(data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"]) == list):
-            can_data_type_1.set(data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"][0])
-    
-        can_data_1 = OptionMenu(the_frame, can_data_type_1, *Can_nb_bytes_1, command= lambda value: nb_bytes_for_message_1(value,num_fonc,nb_capteur[1]))
-        can_data_1.config(font=('calibri',(8)),bg='white',width=3)
+        if coming_from != "open":
+            data['config_y_place_func'] = init_config_y_func
+            data['config_x_place_func'] = init_config_x_func
+            data['config_y_place_sens'] = init_config_y_sens
+            data['config_x_place_sens'] = init_config_x_sens
 
-        separator = Label(the_frame,text="-",fg="white",bg="blue")
+        data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["type_channel"] = channel_type
 
-        can_data_type_2 = StringVar(the_frame)
-        can_data_type_2.set("byte 2")
-        if (coming_from == "open") and (type(data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"]) == list):
-             can_data_type_2.set(data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"][1]) 
-        can_data_2 = OptionMenu(the_frame, can_data_type_2, *Can_nb_bytes_2, command= lambda value: nb_bytes_for_message_2(value,num_fonc,nb_capteur[1]))
-        can_data_2.config(font=('calibri',(8)),bg='white',width=3)
-
-        type_range_analogique = StringVar(the_frame)
-        type_range_analogique.set("Range")
-        if (coming_from == "open") and (data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["range_type"] != None) and (data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["range_type"] != "digital") and (data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["range_type"] != "analog"):
-             type_range_analogique.set(data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["range_type"])
-        range = OptionMenu(the_frame, type_range_analogique, *Can_range_analogique, command= lambda value: type_of_range_analogique(value,num_fonc,nb_capteur[1]))
-        range.config(font=('calibri',(8)),bg='white',width=9)
-
-        dico_nb_bit_by_bytes_analogique_menu_1["can_data_%s"%(nb_capteur[1])] = can_data_1
-        dico_separator["sep_%s"%(nb_capteur[1])] = separator
-        dico_nb_bit_by_bytes_analogique_menu_2["can_data_%s"%(nb_capteur[1])] = can_data_2
-        dico_analogique_type_range["type_range_%s"%(nb_capteur[1])] = range
-
-    if channel_type == "Digital":
-# Cette condition sert à supprimé les entreée pour les capteur digitaux si la fonction analogique est sélectionnée à la place 
-# lorsque qu'une interface est loadée
-        print("digital")
-        print(data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])])
-        if ((data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"] == [None,None]) or (data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"] != None) or (data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["range_type"] == "analog") or (data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["range_type"] != None)) and (coming_from == "new"):
-            dico_nb_bit_by_bytes_analogique_menu_1["can_data_%s"%(nb_capteur[1])].destroy()
-            dico_separator["sep_%s"%(nb_capteur[1])].destroy()
-            dico_nb_bit_by_bytes_analogique_menu_2["can_data_%s"%(nb_capteur[1])].destroy()
-            dico_analogique_type_range["type_range_%s"%(nb_capteur[1])].destroy()
-
-         
-            #print("entrer")
-        #print("pas entrer")  
-        elif coming_from == "open":
-            if data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"] == None:
-                data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"] = "b"
-
-        data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["range_type"] = "digital"
         with open(dico_file_name["path_to_file"], 'w') as file:
-            json.dump(data, file, indent = 6) 
-        digital_byte_of_message = StringVar(the_frame)
-        digital_byte_of_message.set("octet")
-
-        digital_bit_from_byte = StringVar(the_frame)
-        digital_bit_from_byte.set("bit")
-
-        if (coming_from == "open") and ((type(data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"]) != list) or (["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"] != None)):
-            assert data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"].find("b") != -1, \
-                "un capteur digital n'a pas le bon format dans le fichier"
-            digital_values = data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"].split("b")
-            digital_byte_of_message.set(digital_values[0])
-            digital_bit_from_byte.set(digital_values[1])
-
-        digital_byte = OptionMenu(the_frame, digital_byte_of_message, *Can_digital_bit, command= lambda value: byte_message_digital(value,num_fonc,nb_capteur[1]))
-        digital_byte.config(font=('calibri',(8)),bg='white',width=13)
-        dico_byte_from_digital["can_data_%s"%(nb_capteur[1])] = digital_byte
-
-        digital_bit_of_message = OptionMenu(the_frame, digital_bit_from_byte, *Can_digital_bit, command= lambda value: bit_from_message_digital(value,num_fonc,nb_capteur[1]))
-        digital_bit_of_message.config(font=('calibri',(8)),bg='white',width=13)
-        dico_bit_from_digital["can_data_%s"%(nb_capteur[1])] = digital_bit_of_message
+            json.dump(data, file, indent = 6)
         
-    if coming_from != "open":
-        create_tkinter_widjet()
+        if channel_type == "Analogique":
+            print("oui1")
+            print(data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["range_type"])
+            print("coming_from")
+    # Cette condition sert à supprimé les entreée pour les capteur analogique si la fonction digital est sélectionné à la place 
+    # lorsque qu'une interface est loadée
+            if (data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["range_type"] == "digital") and (coming_from == "new"):
+                print("oui2")
+                dico_byte_from_digital["can_data_%s"%(nb_capteur[1])].destroy()
+                dico_bit_from_digital["can_data_%s"%(nb_capteur[1])].destroy()
+
+                data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"] = [None,None]
+                data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["range_type"] = "analog"
+                with open(dico_file_name["path_to_file"], 'w') as file:
+                    json.dump(data, file, indent = 6)
+
+    # Cette condition sert à supprimé les entreée pour les capteur analogique si la fonction digital est sélectionné à la place 
+    # lorsque qu'une nouvelle interface est crée
+            elif coming_from == "new":
+                data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"] = [None,None]
+                data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["range_type"] = "analog"
+                with open(dico_file_name["path_to_file"], 'w') as file:
+                    json.dump(data, file, indent = 6)
+
+            elif coming_from == "open":
+                if data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"][0] == None:
+                    data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"][0] ="byte 1"
+
+                if data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"][1] == None:
+                    data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"][1] ="byte 2"
+
+            #print("entrer dans la fonction")
+            can_data_type_1 = StringVar(the_frame)
+            can_data_type_1.set("byte 1")
+            print(coming_from)
+            #print(type(data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"]) == list)
+            #print(data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"])
+            
+            if (coming_from == "open") and (type(data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"]) == list):
+                can_data_type_1.set(data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"][0])
+        
+            can_data_1 = OptionMenu(the_frame, can_data_type_1, *Can_nb_bytes_1, command= lambda value: nb_bytes_for_message_1(value,num_fonc,nb_capteur[1]))
+            can_data_1.config(font=('calibri',(8)),bg='white',width=3)
+
+            separator = Label(the_frame,text="-",fg="white",bg="blue")
+
+            can_data_type_2 = StringVar(the_frame)
+            can_data_type_2.set("byte 2")
+            if (coming_from == "open") and (type(data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"]) == list):
+                can_data_type_2.set(data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"][1]) 
+            can_data_2 = OptionMenu(the_frame, can_data_type_2, *Can_nb_bytes_2, command= lambda value: nb_bytes_for_message_2(value,num_fonc,nb_capteur[1]))
+            can_data_2.config(font=('calibri',(8)),bg='white',width=3)
+
+            type_range_analogique = StringVar(the_frame)
+            type_range_analogique.set("Range")
+            if (coming_from == "open") and (data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["range_type"] != None) and (data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["range_type"] != "digital") and (data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["range_type"] != "analog"):
+                type_range_analogique.set(data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["range_type"])
+            range = OptionMenu(the_frame, type_range_analogique, *Can_range_analogique, command= lambda value: type_of_range_analogique(value,num_fonc,nb_capteur[1]))
+            range.config(font=('calibri',(8)),bg='white',width=9)
+
+            dico_nb_bit_by_bytes_analogique_menu_1["can_data_%s"%(nb_capteur[1])] = can_data_1
+            dico_separator["sep_%s"%(nb_capteur[1])] = separator
+            dico_nb_bit_by_bytes_analogique_menu_2["can_data_%s"%(nb_capteur[1])] = can_data_2
+            dico_analogique_type_range["type_range_%s"%(nb_capteur[1])] = range
+
+        if channel_type == "Digital":
+    # Cette condition sert à supprimé les entreée pour les capteur digitaux si la fonction analogique est sélectionnée à la place 
+    # lorsque qu'une interface est loadée
+            print("digital")
+            print(data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])])
+            if ((data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"] == [None,None]) or (data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"] != None) or (data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["range_type"] == "analog") or (data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["range_type"] != None)) and (coming_from == "new"):
+                dico_nb_bit_by_bytes_analogique_menu_1["can_data_%s"%(nb_capteur[1])].destroy()
+                dico_separator["sep_%s"%(nb_capteur[1])].destroy()
+                dico_nb_bit_by_bytes_analogique_menu_2["can_data_%s"%(nb_capteur[1])].destroy()
+                dico_analogique_type_range["type_range_%s"%(nb_capteur[1])].destroy()
+                print("yep")
+
+            
+                #print("entrer")
+            #print("pas entrer")  
+            elif coming_from == "open":
+                if data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"] == None:
+                    data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"] = "b"
+
+            data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["range_type"] = "digital"
+            with open(dico_file_name["path_to_file"], 'w') as file:
+                json.dump(data, file, indent = 6) 
+            digital_byte_of_message = StringVar(the_frame)
+            digital_byte_of_message.set("octet")
+
+            digital_bit_from_byte = StringVar(the_frame)
+            digital_bit_from_byte.set("bit")
+
+            print(type(data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"]) != list)
+            print("yeeeeep")
+            print(data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])])
+            print(data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"] != None)
+
+            if (coming_from == "open") and ((type(data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"]) != list) or (data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"] != None)):
+                assert data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"].find("b") != -1, \
+                    "un capteur digital n'a pas le bon format dans le fichier"
+                digital_values = data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"].split("b")
+                digital_byte_of_message.set(digital_values[0])
+                digital_bit_from_byte.set(digital_values[1])
+
+            digital_byte = OptionMenu(the_frame, digital_byte_of_message, *Can_digital_bit, command= lambda value: byte_message_digital(value,num_fonc,nb_capteur[1]))
+            digital_byte.config(font=('calibri',(8)),bg='white',width=13)
+            dico_byte_from_digital["can_data_%s"%(nb_capteur[1])] = digital_byte
+
+            digital_bit_of_message = OptionMenu(the_frame, digital_bit_from_byte, *Can_digital_bit, command= lambda value: bit_from_message_digital(value,num_fonc,nb_capteur[1]))
+            digital_bit_of_message.config(font=('calibri',(8)),bg='white',width=13)
+            dico_bit_from_digital["can_data_%s"%(nb_capteur[1])] = digital_bit_of_message
+            
+        if coming_from != "open":
+            create_tkinter_widjet()
 
 
     
@@ -1369,6 +1385,7 @@ def find_sensors(adress_can_data):
         can_adress = separate[0]
         can_data = (separate[1],"D")
 
+
         if len(separate) == 3:
             can_data = separate[len(separate)-2:len(separate)]
             can_data = ("%s-%s"%(can_data[0],can_data[1]),"A")
@@ -1443,6 +1460,11 @@ def convert_all_data():
                     max_value = convert_comma_to_dot[0]+'.'+convert_comma_to_dot[1]
                 convert_bit_to_value = "((%s - %s)/%s)*%s"%(list(dic.keys())[i],nb_bit/2,nb_bit/2,max_value)
                 all_formul_list.append(convert_bit_to_value)
+            elif analog_range == "direct":
+                max_value = data[associate_with_sensor_list[i][2]][associate_with_sensor_list[i][3]]["value_of_100"]
+                convert_bit_to_value = list(dic.keys())[i]
+                all_formul_list.append(convert_bit_to_value)
+
         elif associate_with_sensor_list[i][1][1] == "D":
             max_value = data[associate_with_sensor_list[i][2]][associate_with_sensor_list[i][3]]["value_of_100"]
             if max_value.find(',') !=-1:

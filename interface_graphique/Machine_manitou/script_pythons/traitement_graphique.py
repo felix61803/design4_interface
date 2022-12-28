@@ -24,7 +24,7 @@ from PIL import Image,ImageTk
 import glob
 
 
-def interface_part_3(json_name_file, json_name_file_part_2):
+def interface_part_3(json_name_file, json_name_file_part_2,win_2):
     init_nb_sous_cycle = 0
     init_config_y_sous_cycle = 60
     init_config_x_sous_cycle = [40, 120, 250, 380, 900]
@@ -58,8 +58,12 @@ def interface_part_3(json_name_file, json_name_file_part_2):
     dico_entry_gps = {}
     dico_label_info_mouse_position = {"index":None,"position en y":None,"Temps":None,"puissance":None,"Image 1":None,"Image 2":None,"GPS":None}
 
+    dico_percentage = {"sec_frame":None,"label":None}
     nb_graph_by_page = 3
 
+    list_assertion = []
+    list_indication = []
+    dico_all_error_message = {"assertions_partie_3":list_assertion,"indication":list_indication}
 
     dico_scrollbar = {}
 
@@ -201,43 +205,48 @@ def interface_part_3(json_name_file, json_name_file_part_2):
         filetypes = (('text files', '*.json'),('All files', '*.*'))
         print(dico_all_path["path_to_json_traitement"])
         filename = fd.askopenfilename(title="Sélectionner l'interface à ouvrir",initialdir=dico_all_path["path_to_folder"],filetypes=filetypes)
-        list_str = filename.split("/")
-        only_name = list_str[len(list_str)-1]
-        #dico_file_name["filename"] = only_name
-
-        dico_all_path["name_of_the_interface_3_file"] = only_name
-        dico_all_path["path_to_json_traitement"] = filename
-        name = only_name.split(".json")
-        dico_all_path["path_to_converted_cycle_puissance"] = dico_all_path["path_to_folder"] + "z_" + name[0] + "_cycle_puissance_totale.csv"
-        if default_file != None:
-            os.remove(default_file)
-
-
-        with open(dico_all_path["path_to_json_traitement"], "r") as f:
-            data = json.load(f)
-
-            #data["all_paths"]["path_to_suppressed_cycle_file"] = "init"
-            #data["all_paths"]["path_to_suppressed_sous_cycle_file"] = "init"
-            data["all_paths"]["path_to_converted_cycle_puissance"] = dico_all_path["path_to_converted_cycle_puissance"]
-            data["all_paths"]["name_of_the_interface_3_file"] =  dico_all_path["name_of_the_interface_3_file"]
-            #data["all_paths"]["path_to_json_traitement"] = dico_all_path["path_to_json_traitement"]
-
-        with open(dico_all_path["path_to_json_traitement"], 'w') as file:
-            json.dump(data, file, indent = 6)
         
-        
-        get_path_pictures()
-        get_gps_file()
-        
-        if data["calculs"] == "oui":
-            calculate_cycle_power()
+        if filename != "":
+            list_str = filename.split("/")
+            only_name = list_str[len(list_str)-1]
+            #dico_file_name["filename"] = only_name
+
+            dico_all_path["name_of_the_interface_3_file"] = only_name
+            dico_all_path["path_to_json_traitement"] = filename
+            name = only_name.split(".json")
+            dico_all_path["path_to_converted_cycle_puissance"] = dico_all_path["path_to_folder"] + "z_" + name[0] + "_cycle_puissance_totale.csv"
+            if default_file != None:
+                os.remove(default_file)
 
 
-        if data["affichage"] == "oui":
-            try_not_for_loops()
-        
+            with open(dico_all_path["path_to_json_traitement"], "r") as f:
+                data = json.load(f)
 
-#        function_from_file()
+                #data["all_paths"]["path_to_suppressed_cycle_file"] = "init"
+                #data["all_paths"]["path_to_suppressed_sous_cycle_file"] = "init"
+                data["all_paths"]["path_to_converted_cycle_puissance"] = dico_all_path["path_to_converted_cycle_puissance"]
+                data["all_paths"]["name_of_the_interface_3_file"] =  dico_all_path["name_of_the_interface_3_file"]
+                #data["all_paths"]["path_to_json_traitement"] = dico_all_path["path_to_json_traitement"]
+
+            with open(dico_all_path["path_to_json_traitement"], 'w') as file:
+                json.dump(data, file, indent = 6)
+            
+            
+            get_path_pictures()
+            get_gps_file()
+            
+            if data["calculs"] == "oui":
+                calculate_cycle_power()
+
+
+            if data["affichage"] == "oui":
+                try_not_for_loops()
+            
+
+    #        function_from_file()
+
+        else:
+            print("action annulée")
 
 
 
@@ -258,35 +267,40 @@ def interface_part_3(json_name_file, json_name_file_part_2):
 
         files = [('json', '*.json')]
         file = fd.asksaveasfile(title= "Sauvegarder l'interface graphique",initialfile = data["all_paths"]["part_1_json_name"],initialdir=dico_all_path["path_to_folder"],filetypes = files, defaultextension = files)
-        list_str = file.name.split("/")
-        only_name = list_str[len(list_str)-1]
-
         
+        if file != None:
+            list_str = file.name.split("/")
+            only_name = list_str[len(list_str)-1]
 
-#        with open(dico_all_path["path_to_json_traitement"], "r") as f:
-#            data = json.load(f)
+            
 
-        dico_all_path["name_of_the_interface_3_file"] = only_name
-        dico_all_path["path_to_json_traitement"] = file.name
-        name = only_name.split(".json")
-        dico_all_path["path_to_converted_cycle_puissance"] = dico_all_path["path_to_folder"] + "z_" + name[0] + "_cycle_puissance_totale.csv"
+    #        with open(dico_all_path["path_to_json_traitement"], "r") as f:
+    #            data = json.load(f)
 
-#        with open(dico_all_path["path_to_json_traitement"], 'w') as file:
-#            json.dump(data, file, indent = 6)
+            dico_all_path["name_of_the_interface_3_file"] = only_name
+            dico_all_path["path_to_json_traitement"] = file.name
+            name = only_name.split(".json")
+            dico_all_path["path_to_converted_cycle_puissance"] = dico_all_path["path_to_folder"] + "z_" + name[0] + "_cycle_puissance_totale.csv"
 
-        with open(default_file, "r") as f:
-            data_old = json.load(f)
+    #        with open(dico_all_path["path_to_json_traitement"], 'w') as file:
+    #            json.dump(data, file, indent = 6)
 
-            #data_old["all_paths"]["path_to_suppressed_cycle_file"] = "init"
-            #data_old["all_paths"]["path_to_suppressed_sous_cycle_file"] = "init"
+            with open(default_file, "r") as f:
+                data_old = json.load(f)
 
-        if default_file != None:
-            os.remove(default_file)
+                #data_old["all_paths"]["path_to_suppressed_cycle_file"] = "init"
+                #data_old["all_paths"]["path_to_suppressed_sous_cycle_file"] = "init"
 
-        with open(dico_all_path["path_to_json_traitement"], 'w') as file:
-            json.dump(data_old, file, indent = 6)
+            if default_file != None:
+                os.remove(default_file)
 
-        calculate_cycle_power()
+            with open(dico_all_path["path_to_json_traitement"], 'w') as file:
+                json.dump(data_old, file, indent = 6)
+
+            calculate_cycle_power()
+
+        else:
+            print("action annulée")
 
     def plot_graph_converted():
 
@@ -477,6 +491,12 @@ def interface_part_3(json_name_file, json_name_file_part_2):
             with open(dico_all_path["path_to_json_traitement"], 'w') as file:
                 json.dump(data, file, indent = 6)
 
+            dico_plot_cycle_puissance["plot0"].set_xlim([float(data["Valeur_initiale_x_zoom"]),float(data["valeur_finale_x_zoom"])])
+        elif data["all_paths"]["path_to_suppressed_sous_cycle_file"] == "delete":
+            dico_plot_cycle_puissance["plot0"].set_xlim([float(data["Valeur_index_1_zoom"]),float(data["Valeur_index_dernier_zoom"])])
+
+            #dico_fig_cycle_puissance["fig0"].canvas.draw_idle()
+
         canvas = FigureCanvasTkAgg(dico_fig_cycle_puissance["fig0"], master=the_frame)
         dico_canvas_cycle_puissance["canvas"] = canvas
 
@@ -639,7 +659,11 @@ def interface_part_3(json_name_file, json_name_file_part_2):
             for i in range(nb_line):
                 dico_with_all_can_data_converted = {"Time":dico_power_data_and_time["Time"][i], "cycle_puissance":dico_power_data_and_time["cycle_puissance"][i]}
                 writer.writerow(dico_with_all_can_data_converted)
-
+        
+        #list_indication = ["Enregistrement effectué sans problème dans : %s"%(data["all_paths"]["path_to_converted_cycle_puissance"])]
+        #dico_all_error_message["indication"] =list_indication
+        #
+        #fenetre_erreur(dico_all_error_message["indication"],"indication", is_indication=True)
         print("Enregistrement effectué sans problème dans : ", data["all_paths"]["path_to_converted_cycle_puissance"])
 
         with open(dico_all_path["path_to_json_traitement"], "r") as f:
@@ -660,26 +684,27 @@ def interface_part_3(json_name_file, json_name_file_part_2):
         path_to_suppress_total_cycle = data["all_paths"]["path_to_folder"] + "z_" + name_file[0] + "_total_cycle_apres_suppression.csv"
         path_to_suppress_sous_cycle = data["all_paths"]["path_to_folder"] + "z_" + name_file[0] + "_sous_cycle_apres_suppression.csv"
 
-        #print("x_min,x_max : ",x_min,x_max)
-        indmin, indmax = searchsorted(dico_x_axis_plots["x_val"], (x_min, x_max))
-        #print("indmin : ",indmin )
-        #print("indmax : ",indmax )
-        indmax = min(len(dico_x_axis_plots["x_val"]) - 1, indmax)
-        #print("indmax : ",indmax )
-
-        thisx = dico_x_axis_plots["x_val"][indmin:indmax]
-        print("thisx : ",thisx)
-        thisy = dico_y_axis_plot_cycle_puissance["y_val"][indmin:indmax]
-        #print("thisy : ",thisy)
-#            line2.set_data(thisx, thisy)
-#            fig2.set_xlim(thisx[0], thisx[-1])
-#            fig2.set_ylim(thisy.min(), thisy.max())
-        dico_fig_cycle_puissance["fig0"].canvas.draw_idle()
         #print("c_[thisx, thisy] : ",c_[thisx, thisy])
 
         # save
         #savetxt("text.out", c_[thisx, thisy])
-        if data["all_paths"]["path_to_suppressed_cycle_file"] == "init":
+        if data["all_paths"]["path_to_suppressed_cycle_file"] == "init" or dico_x_axis_plots_deleted == {}:
+
+            #print("x_min,x_max : ",x_min,x_max)
+            indmin, indmax = searchsorted(dico_x_axis_plots["x_val"], (x_min, x_max))
+            #print("indmin : ",indmin )
+            #print("indmax : ",indmax )
+            indmax = min(len(dico_x_axis_plots["x_val"]) - 1, indmax)
+            #print("indmax : ",indmax )
+
+            thisx = dico_x_axis_plots["x_val"][indmin:indmax]
+            print("thisx : ",thisx)
+            thisy = dico_y_axis_plot_cycle_puissance["y_val"][indmin:indmax]
+            #print("thisy : ",thisy)
+    #            line2.set_data(thisx, thisy)
+    #            fig2.set_xlim(thisx[0], thisx[-1])
+    #            fig2.set_ylim(thisy.min(), thisy.max())
+            dico_fig_cycle_puissance["fig0"].canvas.draw_idle()
 
             dico_line_and_time.clear()
             dico_data_acquisition.clear()
@@ -718,6 +743,22 @@ def interface_part_3(json_name_file, json_name_file_part_2):
         
         elif data["all_paths"]["path_to_suppressed_cycle_file"] == "delete":
 
+            #print("x_min,x_max : ",x_min,x_max)
+            indmin, indmax = searchsorted(dico_x_axis_plots_deleted["x_val_new"], (x_min, x_max))
+            #print("indmin : ",indmin )
+            #print("indmax : ",indmax )
+            indmax = min(len(dico_x_axis_plots_deleted["x_val_new"]) - 1, indmax)
+            #print("indmax : ",indmax )
+
+            thisx_del = dico_x_axis_plots_deleted["x_val_new"][indmin:indmax]
+            print("thisx : ",thisx_del)
+            thisy = dico_y_axis_plots_deleted["y_val_new"][indmin:indmax]
+            #print("thisy : ",thisy)
+    #            line2.set_data(thisx, thisy)
+    #            fig2.set_xlim(thisx[0], thisx[-1])
+    #            fig2.set_ylim(thisy.min(), thisy.max())
+            dico_fig_cycle_puissance["fig0"].canvas.draw_idle()
+
             dico_line_and_time.clear()
             dico_data_acquisition.clear()
             dico_data_acquisition["Date(s) d'acquisition"] = []
@@ -737,7 +778,7 @@ def interface_part_3(json_name_file, json_name_file_part_2):
                 all_line_list = []
                 for line in reader:
                     #print(line)
-                    if count_line+1 not in thisx:
+                    if count_line+1 not in thisx_del:
                         all_line_list.append(line)                  
                     count_line += 1
             print("nb_ligne_cycle",len(all_line_list))
@@ -752,7 +793,7 @@ def interface_part_3(json_name_file, json_name_file_part_2):
                 count_line = 1
                 for line in all_line_list:
                     #print(line)
-                    if count_line+1 not in thisx:
+                    if count_line+1 not in thisx_del:
                         writer_power.writerow(line)                   
                     count_line += 1
                 print("count",count_line)
@@ -768,10 +809,12 @@ def interface_part_3(json_name_file, json_name_file_part_2):
         with open(dico_all_path["path_to_json_traitement"], 'w') as file:
                 json.dump(data, file, indent = 6)
 
+        #list_indication = ["Enregistrement effectué sans problème dans : z_%s_total_cycle_apres_suppression.csv"%(name_file[0])]
+
         print("Enregistrement effectué sans problème dans : ", "z_" + name_file[0] + "_total_cycle_apres_suppression.csv")
         
 
-        if data["all_paths"]["path_to_suppressed_sous_cycle_file"] == "init":    
+        if data["all_paths"]["path_to_suppressed_sous_cycle_file"] == "init" or dico_x_axis_plots_deleted == {}:    
             with open(data["all_paths"]["path_to_sous_cycle_data_interface_Part_2"], newline='') as csvfile:
                 reader = csv.DictReader(csvfile)
                 count_line = 1
@@ -797,7 +840,7 @@ def interface_part_3(json_name_file, json_name_file_part_2):
                 all_line_list = []
                 for line in reader:
                     #print(line)
-                    if count_line+1 not in thisx:
+                    if count_line+1 not in thisx_del:
                         all_line_list.append(line)                  
                     count_line += 1
             print("nb_ligne_sous_cycle",len(all_line_list))
@@ -809,7 +852,7 @@ def interface_part_3(json_name_file, json_name_file_part_2):
                     count_line = 1
                     for line in all_line_list:
                         #print(line)
-                        if count_line+1 not in thisx:
+                        if count_line+1 not in thisx_del:
                             writer.writerow(line)                   
                         count_line += 1
                     print("count",count_line)
@@ -819,6 +862,11 @@ def interface_part_3(json_name_file, json_name_file_part_2):
 
             with open(dico_all_path["path_to_json_traitement"], 'w') as file:
                 json.dump(data, file, indent = 6)
+
+        #list_indication.append("Enregistrement effectué sans problème dans : z_sous_cycle_apres_suppression.csv")
+        #dico_all_error_message["indication"] =list_indication
+        #
+        #fenetre_erreur(dico_all_error_message["indication"],"indication", is_indication=True)
 
         print("Enregistrement effectué sans problème dans : ", "z_sous_cycle_apres_suppression.csv")
         
@@ -844,6 +892,13 @@ def interface_part_3(json_name_file, json_name_file_part_2):
         dico_plot_cycle_puissance["plot0"] = plot0
         dico_plot_cycle_puissance["plot0"].plot(dico_x_axis_plots_deleted["x_val_new"], dico_y_axis_plots_deleted["y_val_new"], label=dataArray_new.dtype.names[0])
         dico_plot_cycle_puissance["plot0"].set_title(dataArray_new.dtype.names[0])
+        dico_plot_cycle_puissance["plot0"].set_xlim([float(dico_x_axis_plots_deleted["x_val_new"][0]),float(dico_x_axis_plots_deleted["x_val_new"][len(dico_x_axis_plots_deleted["x_val_new"])-1])])
+        print(dico_x_axis_plots_deleted["x_val_new"][0])
+        print(dico_x_axis_plots_deleted["x_val_new"][len(dico_x_axis_plots_deleted["x_val_new"])-1])
+        data["Valeur_index_1_zoom"] = str(dico_x_axis_plots_deleted["x_val_new"][0])
+        data["Valeur_index_dernier_zoom"] = str(dico_x_axis_plots_deleted["x_val_new"][len(dico_x_axis_plots_deleted["x_val_new"])-1])
+        with open(dico_all_path["path_to_json_traitement"], 'w') as file:
+            json.dump(data, file, indent = 6)
         dico_fig_cycle_puissance["fig0"].canvas.draw_idle()
 
 
@@ -883,6 +938,8 @@ def interface_part_3(json_name_file, json_name_file_part_2):
 
         data["all_paths"]["path_to_suppressed_cycle_file"] = "init"
         data["all_paths"]["path_to_suppressed_sous_cycle_file"] = "init"
+        data.pop("Valeur_index_1_zoom")
+        data.pop("Valeur_index_dernier_zoom")
 
         with open(dico_all_path["path_to_json_traitement"], 'w') as file:
                 json.dump(data, file, indent = 6)
@@ -973,22 +1030,49 @@ def interface_part_3(json_name_file, json_name_file_part_2):
         
 
     def span_select_function_zoom(x_min,x_max):
-        print(dico_x_axis_plots["x_val"])
-        #print("x_min,x_max : ",x_min,x_max)
-        indmin, indmax = searchsorted(dico_x_axis_plots["x_val"], (x_min, x_max))
-        #print("indmin : ",indmin )
-        #print("indmax : ",indmax )
-        indmax = min(len(dico_x_axis_plots["x_val"]) - 1, indmax)
-        print("indmax et idmin: ",indmax, indmin)
-        dico_plot_cycle_puissance["plot0"].set_xlim([indmin, indmax])
 
-        thisx = dico_x_axis_plots["x_val"][indmin:indmax]
-        print("thisx : ",thisx)
-        thisy = dico_y_axis_plot_cycle_puissance["y_val"][indmin:indmax]
-        #print("thisy : ",thisy)
+        with open(dico_all_path["path_to_json_traitement"], "r") as f:
+            data = json.load(f)
+
+        print(data["all_paths"]["path_to_suppressed_cycle_file"])
+
+        if data["all_paths"]["path_to_suppressed_cycle_file"] == "init" or dico_x_axis_plots_deleted =={}:
+            print(dico_x_axis_plots["x_val"])
+            #print("x_min,x_max : ",x_min,x_max)
+            indmin, indmax = searchsorted(dico_x_axis_plots["x_val"], (x_min, x_max))
+            #print("indmin : ",indmin )
+            #print("indmax : ",indmax )
+            indmax = min(len(dico_x_axis_plots["x_val"]) - 1, indmax)
+            print("indmax et idmin: ",indmax, indmin)
+            dico_plot_cycle_puissance["plot0"].set_xlim([indmin, indmax])
+
+            thisx = dico_x_axis_plots["x_val"][indmin:indmax]
+            print("thisx : ",thisx)
+            thisy = dico_y_axis_plot_cycle_puissance["y_val"][indmin:indmax]
+            #print("thisy : ",thisy)
 #            line2.set_data(thisx, thisy)
 #            fig2.set_xlim(thisx[0], thisx[-1])
 #            fig2.set_ylim(thisy.min(), thisy.max())
+            print("bruuh")
+        elif data["all_paths"]["path_to_suppressed_cycle_file"] == "delete":
+            print(dico_x_axis_plots_deleted["x_val_new"])
+            #print("x_min,x_max : ",x_min,x_max)
+            indmin, indmax = searchsorted(dico_x_axis_plots_deleted["x_val_new"], (x_min, x_max))
+            #print("indmin : ",indmin )
+            #print("indmax : ",indmax )
+            indmax = min(len(dico_x_axis_plots_deleted["x_val_new"]) - 1, indmax)
+            print("indmax et idmin: ",indmax, indmin)
+            dico_plot_cycle_puissance["plot0"].set_xlim([indmin, indmax])
+
+            thisx = dico_x_axis_plots_deleted["x_val_new"][indmin:indmax]
+            print("thisx : ",thisx)
+            thisy = dico_y_axis_plots_deleted["y_val_new"][indmin:indmax]
+            #print("thisy : ",thisy)
+#            line2.set_data(thisx, thisy)
+#            fig2.set_xlim(thisx[0], thisx[-1])
+#            fig2.set_ylim(thisy.min(), thisy.max())
+            print("yep")
+        print("yuuuup")
         dico_fig_cycle_puissance["fig0"].canvas.draw_idle()
         #print("c_[thisx, thisy] : ",c_[thisx, thisy])
 
@@ -1017,8 +1101,13 @@ def interface_part_3(json_name_file, json_name_file_part_2):
         with open(dico_all_path["path_to_json_traitement"], "r") as f:
             data = json.load(f)
         #print(dico_x_axis_plots["x_val"][0],dico_x_axis_plots["x_val"][len(dico_x_axis_plots["x_val"])-1])
-        dico_plot_cycle_puissance["plot0"].set_xlim([float(data["Valeur_initiale_x_zoom"]),float(data["valeur_finale_x_zoom"])])
+        if data["all_paths"]["path_to_suppressed_cycle_file"] == "init":
+            dico_plot_cycle_puissance["plot0"].set_xlim([float(data["Valeur_initiale_x_zoom"]),float(data["valeur_finale_x_zoom"])])
+        elif data["all_paths"]["path_to_suppressed_cycle_file"] == "delete":
+            dico_plot_cycle_puissance["plot0"].set_xlim([float(data["Valeur_index_1_zoom"]),float(data["Valeur_index_dernier_zoom"])])
         dico_fig_cycle_puissance["fig0"].canvas.draw_idle()
+
+        
 
     def delete_selected_part_of_plot():
         print("delete yeah")
@@ -1137,31 +1226,47 @@ def interface_part_3(json_name_file, json_name_file_part_2):
 
             folder = fd.askdirectory(title= "Sélectionner le dossier des photos (FluxVideo)", initialdir=dico_all_path["Path_to_machine_folder"] + "\\donnees_recoltees_machine")
             print(folder)
+            print("yeeppp")
 
-            data["all_paths"]["path_fluxVideo"] = folder
-            data["all_paths"]["path_camera_1"] = folder + "\\Camera1"
-            data["all_paths"]["path_camera_2"] = folder + "\\Camera2"
+            if folder != "":
+                print("entre")
+                data["all_paths"]["path_fluxVideo"] = folder
+                data["all_paths"]["path_camera_1"] = folder + "\\Camera1"
+                data["all_paths"]["path_camera_2"] = folder + "\\Camera2"
 
-            with open(dico_all_path["path_to_json_traitement"], 'w') as file:
-                json.dump(data, file, indent = 6)
+                with open(dico_all_path["path_to_json_traitement"], 'w') as file:
+                    json.dump(data, file, indent = 6)
 
-            dico_picture_cam_1 = {}
-            for picture in glob.glob(data["all_paths"]["path_camera_1"]+ "\\*.jpg"):
-                only_name = picture.split("\\")
-                without_extention = only_name[len(only_name)-1].split(".")
-                #print(without_extention[0:len(without_extention)-1])
-                #print(".".join(without_extention[0:len(without_extention)-1]))
-                without_name = ".".join(without_extention[0:len(without_extention)-1]).split("Camera1_")
-                dico_picture_cam_1[without_name[1]] = only_name[len(only_name)-1]
+                dico_picture_cam_1 = {}
+                for picture in glob.glob(data["all_paths"]["path_camera_1"]+ "\\*.jpg"):
+                    only_name = picture.split("\\")
+                    without_extention = only_name[len(only_name)-1].split(".")
+                    #print(without_extention[0:len(without_extention)-1])
+                    #print(".".join(without_extention[0:len(without_extention)-1]))
+                    without_name = ".".join(without_extention[0:len(without_extention)-1]).split("Camera1_")
+                    dico_picture_cam_1[without_name[1]] = only_name[len(only_name)-1]
 
-            dico_picture_cam_2 = {}
-            for picture in glob.glob(data["all_paths"]["path_camera_2"]+ "\\*.jpg"):
-                only_name = picture.split("\\")
-                without_extention = only_name[len(only_name)-1].split(".")
-                #print(without_extention[0:len(without_extention)-1])
-                #print(".".join(without_extention[0:len(without_extention)-1]))
-                without_name = ".".join(without_extention[0:len(without_extention)-1]).split("Camera2_")
-                dico_picture_cam_2[without_name[1]] = only_name[len(only_name)-1]
+                dico_picture_cam_2 = {}
+                for picture in glob.glob(data["all_paths"]["path_camera_2"]+ "\\*.jpg"):
+                    only_name = picture.split("\\")
+                    without_extention = only_name[len(only_name)-1].split(".")
+                    #print(without_extention[0:len(without_extention)-1])
+                    #print(".".join(without_extention[0:len(without_extention)-1]))
+                    without_name = ".".join(without_extention[0:len(without_extention)-1]).split("Camera2_")
+                    dico_picture_cam_2[without_name[1]] = only_name[len(only_name)-1]
+
+                #print(dico_picture_cam_1)
+                #print(dico_picture_cam_2)
+
+                list_indication = ["caméras importées"]
+                dico_all_error_message["indication"] =list_indication
+                    
+                fenetre_erreur(dico_all_error_message["indication"],"indication", is_indication=True)
+
+                print("caméras importées")
+            else:
+                print("action annulée")
+                return None
 
         elif data["photo_loader"] == "oui":
 
@@ -1186,14 +1291,15 @@ def interface_part_3(json_name_file, json_name_file_part_2):
 
         dico_format_cam["cam1"] = dico_picture_cam_1
         dico_format_cam["cam2"] = dico_picture_cam_2
-        #print(dico_format_cam)
+            #print(dico_format_cam)
 
 
         data["photo_loader"] = "oui"
         with open(dico_all_path["path_to_json_traitement"], 'w') as file:
             json.dump(data, file, indent = 6)
 
-        print("caméra importées")
+        
+            
 
     def get_gps_file():
 
@@ -1203,22 +1309,34 @@ def interface_part_3(json_name_file, json_name_file_part_2):
         if data["gps_loader"] == "non":
             filetypes = (('text files', '*.csv'),('All files', '*.*'))
             data_csv = fd.askopenfilename(title='Sélectioner le fichier des données GPS',initialdir=dico_all_path["Path_to_machine_folder"] + "\\donnees_recoltees_machine",filetypes=filetypes)
-            list_str = data_csv.split("/")
-            only_name = list_str[len(list_str)-1]
+            
+            if data_csv != "":
+                list_str = data_csv.split("/")
+                only_name = list_str[len(list_str)-1]
 
-            #print(data_csv)
-            #print(only_name)
-            data["all_paths"]["path_to_gps_file"] = data_csv
+                #print(data_csv)
+                #print(only_name)
+                data["all_paths"]["path_to_gps_file"] = data_csv
 
-            data["gps_loader"] = "oui"
-            with open(dico_all_path["path_to_json_traitement"], 'w') as file:
-                json.dump(data, file, indent = 6)
+                data["gps_loader"] = "oui"
+                with open(dico_all_path["path_to_json_traitement"], 'w') as file:
+                    json.dump(data, file, indent = 6)
 
-            with open(data["all_paths"]["path_to_gps_file"], newline='') as csvfile:
-                reader = csv.DictReader(csvfile)
-                header = reader.fieldnames
-                for line in reader:
-                    dico_gps[line[header[0]]] = line[header[1]]
+                with open(data["all_paths"]["path_to_gps_file"], newline='') as csvfile:
+                    reader = csv.DictReader(csvfile)
+                    header = reader.fieldnames
+                    for line in reader:
+                        dico_gps[line[header[0]]] = line[header[1]]
+                
+                print("gps importé")
+                list_indication = ["gps importé"]
+                dico_all_error_message["indication"] =list_indication
+                
+                fenetre_erreur(dico_all_error_message["indication"],"indication", is_indication=True)
+            
+            else:
+                print("action annulée")
+                return None
 
         elif data["photo_loader"] == "oui":
             with open(data["all_paths"]["path_to_gps_file"], newline='') as csvfile:
@@ -1227,7 +1345,9 @@ def interface_part_3(json_name_file, json_name_file_part_2):
                 for line in reader:
                     dico_gps[line[header[0]]] = line[header[1]]
 
-        print("gps importé")
+        
+
+        
 
     def close_win_export_calculator(win,obj_entry,obj_nb_line,list_all_cycle):
 
@@ -1250,73 +1370,86 @@ def interface_part_3(json_name_file, json_name_file_part_2):
 
         files = [('csv', '*.csv')]
         power_file = fd.asksaveasfile(title="Enrgistrer le fichier de cycle de puissance formaté pour le calculateur",initialfile = "cycle_puissance",initialdir=dico_all_path["Path_to_machine_folder"] + "\\fichier_pour_calculateur",filetypes = files, defaultextension = files)
-        list_str = power_file.name.split("/")
-        only_name = list_str[len(list_str)-1]
+        if power_file != None:
+            list_str = power_file.name.split("/")
+            only_name = list_str[len(list_str)-1]
 
-        print(power_file.name)
-        print(type(power_file.name))
-        print(str(power_file.name))
+            print(power_file.name)
+            print(type(power_file.name))
+            print(str(power_file.name))
 
-        print(len(list_all_cycle))
-        print(factor_echant)
-        print(nb_line_wanted)
-
-
-        if data["all_paths"]["path_to_suppressed_cycle_file"] == "init":
-            list_line_csv = []
-            dico_for_calculator = {}
-            with open(data["all_paths"]["path_to_converted_cycle_puissance"], newline='') as csvfile:
-                reader = csv.DictReader(csvfile)
-                header = reader.fieldnames
-                for i in range(nb_line_wanted):
-                    if list_all_cycle[i*factor_echant] < 0:
-                        list_line_csv.append({"Puissance":list_all_cycle[i*factor_echant],"recuperation":"x","duree":"%s"%(time_stamp_calculator)})
-                    else:
-                        list_line_csv.append({"Puissance":list_all_cycle[i*factor_echant],"recuperation":" ","duree":"%s"%(time_stamp_calculator)})
-
-            
+            print(len(list_all_cycle))
+            print(factor_echant)
+            print(nb_line_wanted)
 
 
-            with open(power_file.name, 'w', newline='') as csv_new_file:
+            if data["all_paths"]["path_to_suppressed_cycle_file"] == "init":
+                list_line_csv = []
+                dico_for_calculator = {}
+                with open(data["all_paths"]["path_to_converted_cycle_puissance"], newline='') as csvfile:
+                    reader = csv.DictReader(csvfile)
+                    header = reader.fieldnames
+                    for i in range(nb_line_wanted):
+                        if list_all_cycle[i*factor_echant] < 0:
+                            list_line_csv.append({"Puissance":list_all_cycle[i*factor_echant],"recuperation":"x","duree":"%s"%(time_stamp_calculator)})
+                        else:
+                            list_line_csv.append({"Puissance":list_all_cycle[i*factor_echant],"recuperation":" ","duree":"%s"%(time_stamp_calculator)})
 
-                writer = csv.DictWriter(csv_new_file, fieldnames=["Puissance", "recuperation", "duree"])
-                writer.writeheader()
-
-                for line in list_line_csv:
-                    writer.writerow(line)                  
                 
-            print("Enregistrement effectué sans problème dans : ", only_name)
-            print("non supress")
-#
-#        
 
-        elif data["all_paths"]["path_to_suppressed_cycle_file"] == "delete":
 
-            list_line_csv = []
-            dico_for_calculator = {}
-            with open(path_to_suppress_total_cycle, newline='') as csvfile:
-                reader = csv.DictReader(csvfile)
-                header = reader.fieldnames
+                with open(power_file.name, 'w', newline='') as csv_new_file:
+
+                    writer = csv.DictWriter(csv_new_file, fieldnames=["Puissance", "recuperation", "duree"])
+                    writer.writeheader()
+
+                    for line in list_line_csv:
+                        writer.writerow(line)                  
                 
-                for i in range(nb_line_wanted):
-                    if list_all_cycle[i*factor_echant] < 0:
-                        list_line_csv.append({"Puissance":list_all_cycle[i*factor_echant],"recuperation":"x","duree":"%s"%(time_stamp_calculator)})
-                    else:
-                        list_line_csv.append({"Puissance":list_all_cycle[i*factor_echant],"recuperation":" ","duree":"%s"%(time_stamp_calculator)})
-
-            
-
-
-            with open(power_file.name, 'w', newline='') as csv_new_file:
-
-                writer = csv.DictWriter(csv_new_file, fieldnames=["Puissance", "recuperation", "duree"])
-                writer.writeheader()
+                list_indication = ["Enregistrement effectué sans problème dans : %s"%(only_name), "sans suppression de données"]
+                dico_all_error_message["indication"] =list_indication
                 
-                for line in list_line_csv:
-                    writer.writerow(line)                   
+                fenetre_erreur(dico_all_error_message["indication"],"indication", is_indication=True)
+
+                print("Enregistrement effectué sans problème dans : ", only_name)
+                print("sans suppression de données")
+    #
+    #        
+
+            elif data["all_paths"]["path_to_suppressed_cycle_file"] == "delete":
+
+                list_line_csv = []
+                dico_for_calculator = {}
+                with open(path_to_suppress_total_cycle, newline='') as csvfile:
+                    reader = csv.DictReader(csvfile)
+                    header = reader.fieldnames
+                    
+                    for i in range(nb_line_wanted):
+                        if list_all_cycle[i*factor_echant] < 0:
+                            list_line_csv.append({"Puissance":list_all_cycle[i*factor_echant],"recuperation":"x","duree":"%s"%(time_stamp_calculator)})
+                        else:
+                            list_line_csv.append({"Puissance":list_all_cycle[i*factor_echant],"recuperation":" ","duree":"%s"%(time_stamp_calculator)})
+
                 
-            print("Enregistrement effectué sans problème dans : ", only_name)
-            print("supress")
+
+
+                with open(power_file.name, 'w', newline='') as csv_new_file:
+
+                    writer = csv.DictWriter(csv_new_file, fieldnames=["Puissance", "recuperation", "duree"])
+                    writer.writeheader()
+                    
+                    for line in list_line_csv:
+                        writer.writerow(line)                   
+                
+                list_indication = ["Enregistrement effectué sans problème dans : %s"%(only_name), "avec suppression de données"]
+                dico_all_error_message["indication"] =list_indication
+                
+                fenetre_erreur(dico_all_error_message["indication"],"indication", is_indication=True)
+
+                print("Enregistrement effectué sans problème dans : ", only_name)
+                print("avec suppression de données")
+        else:
+            print("action annulée")
 
     def get_factor_and_new_ech(obj_ech,obj_nb_line,obj_nb_line_calculate,obj_new_ech,len_cycle_puissance_data,limit_exceed=None):
 
@@ -1549,6 +1682,28 @@ def interface_part_3(json_name_file, json_name_file_part_2):
     def get_average(list_data):
         return sum(list_data)/len(list_data)
 
+    def close_rapport_window(win):
+        win.destroy()
+
+    def print_percentage():
+        with open(dico_all_path["path_to_taille_interface_3"], "r") as f:
+            data_2 = json.load(f)
+        
+        #data_2['windows_scrol_height'] = int(h.get())
+        select_frame = the_frame
+        #the_frame_level_2 = Toplevel(select_frame, height=int(data_2["windows_length"]), width=int(data_2["windows_width"]))   
+        the_frame_level_2 = Toplevel(select_frame)
+        the_frame_level_2.minsize(500, 500)
+        percentage = Label(the_frame_level_2, text="Création du pdf en cours : 0%") #Select title
+        dico_percentage["sec_frame"] = the_frame_level_2
+        dico_percentage["label"] = percentage
+        percentage.place(x=0, y=0)
+        button = Button(the_frame_level_2, text="terminer", command=lambda : close_rapport_window(the_frame_level_2))
+        button.place(x=int((data_2["windows_width"]+data_2["windows_width"]/2)/2),y=0)
+        print("done")
+
+
+
     def select_report_info(name_project, type_machine, win):
 
         with open(dico_all_path["path_to_json_traitement"], "r") as f:
@@ -1660,9 +1815,6 @@ def interface_part_3(json_name_file, json_name_file_part_2):
             time_acquisition = "%s heures, %s minutes, %s secondes"%(str(dif).split(":")[0], str(dif).split(":")[1], str(dif).split(":")[2])
         if len(date_acquis) == 2:
             date_acquis = "Du %s au %s"%(data["Date(s)"][0],data["Date(s)"][1])
-        
-
-        
 
         pdf.add_page()
         pdf.text(10, 25, "Projet : ")
@@ -1674,6 +1826,7 @@ def interface_part_3(json_name_file, json_name_file_part_2):
         pdf.text(10,55,"Durée de l'acquisition : ")
         pdf.text(60,55, time_acquisition)
         print("Création du pdf en cours : ","0 %")
+        
         pdf.image(data["all_paths"]["Path_to_machine_folder"] + "\\rapports\\images\\cycle_puissance.png", 15, 75, 210 - 30)
         count = 1
         #plot_only_sous_cycle = []
@@ -1685,6 +1838,10 @@ def interface_part_3(json_name_file, json_name_file_part_2):
         #            plot_only_sous_cycle.append(elem)
 #
         #print(plot_only_sous_cycle)
+        
+
+        
+       
         for elem in plots_per_page:
             print("Création du pdf en cours : ", "%s"%((count)/(len(dico_headers["sous_cycles"]))*100) +" % ")
             pdf.print_page(elem)
@@ -1693,17 +1850,25 @@ def interface_part_3(json_name_file, json_name_file_part_2):
 
         files = [('pdf', '*.pdf')]
         file = fd.asksaveasfile(title= "Création du rapport",initialfile = "Rapport de consommation",initialdir=data["all_paths"]["Path_to_machine_folder"] + "\\rapports",filetypes = files, defaultextension = files)
-        list_str = file.name.split("/")
-        only_name = list_str[len(list_str)-1]
+        if file != None:
+            list_str = file.name.split("/")
+            only_name = list_str[len(list_str)-1]
 
-        print(file.name)
-        print(type(file.name))
-        print(str(file.name))
-        print(str(only_name))
+            print(file.name)
+            print(type(file.name))
+            print(str(file.name))
+            print(str(only_name))
 
-        pdf.output(file.name, 'F')
-        print("Enregistrement du rapport de consommation effectués dans : ","rapports\\%s"%(only_name))
+            pdf.output(file.name, 'F')
 
+            list_indication = ["Enregistrement du rapport de consommation effectués dans : rapports\\%s"%(only_name)]
+            dico_all_error_message["indication"] =list_indication
+            
+            fenetre_erreur(dico_all_error_message["indication"],"indication", is_indication=True)
+
+            print("Enregistrement du rapport de consommation effectués dans : ","rapports\\%s"%(only_name))
+        else:
+            print("action annulée")
 
     def print_rapport_to_pdf():
 
@@ -1728,7 +1893,35 @@ def interface_part_3(json_name_file, json_name_file_part_2):
         ent_machine.grid(row = 1, column = 1, padx = 30, pady =10)
         button.grid(row = 2, column = 2, padx = 30, pady =10)
         
+
+    def end_error_message(win,list):
+        dico_all_error_message[list].clear()
+        win.destroy()
+
+    def fenetre_erreur(message_error_list,list,win2=None,is_indication=False):
         
+        with open(dico_all_path["path_to_taille_interface_3"], "r") as f:
+            data_2 = json.load(f)
+        
+        #data_2['windows_scrol_height'] = int(h.get())
+        select_frame = the_frame 
+        if win2 != None:
+            select_frame = win2
+        the_frame_level_2 = Toplevel(select_frame, height=data_2["windows_length"], width=data_2["windows_width"])   
+        text_box = Text(the_frame_level_2,height=int(data_2["windows_length"]/22), width=int(data_2["windows_width"]/12)) #Select title
+        #txt.grid(row = 0, column = 0)
+        text_box.place(x=0, y=0)
+        if is_indication == False:
+            text_box.insert(END, "Attention les erreurs suivantes sont survenues:")
+            text_box.insert(END,"\n")
+            text_box.insert(END,"\n")
+        for message in message_error_list:
+            text_box.insert(END, message)
+            text_box.insert(END,"\n")
+            text_box.insert(END,"\n")  
+        button = Button(the_frame_level_2, text="terminer", command=lambda : end_error_message(the_frame_level_2,list))
+
+        button.place(x=int((data_2["windows_width"]+data_2["windows_width"]/2)/2),y=0)
 
     def end_script():
         exit()
@@ -1777,50 +1970,83 @@ def interface_part_3(json_name_file, json_name_file_part_2):
             print("ok")
 
     except json.JSONDecodeError:
-        assert 1==2, \
-            "Il n'y a aucune interface détectée associée à ce fichier (.json dans 1) setup donnees)"
+        try:
+            assert 1==2, \
+                "Il n'y a aucune interface détectée associée à ce fichier (.json dans 1) setup donnees)"
 
+        except AssertionError:
+            list_assertion.append("Il n'y a aucune interface détectée associée à ce fichier (.json dans 1) setup donnees)")
+            dico_all_error_message["assertions_partie_3"] = list_assertion
     except FileNotFoundError:
-        assert 1==2, \
-            "Il n'y a aucune interface détectée associée à ce fichier (.json dans 1) setup donnees)"
+        try:
+            assert 1==2, \
+                "Il n'y a aucune interface détectée associée à ce fichier (.json dans 1) setup donnees)"
 
+        except AssertionError:
+            list_assertion.append("Il n'y a aucune interface détectée associée à ce fichier (.json dans 1) setup donnees)")
+            dico_all_error_message["assertions_partie_3"] = list_assertion
     try:
         with open(dico_all_path["path_to_json_interface_part_2"], 'r') as f:
             print("ok")
 
     except json.JSONDecodeError:
-        assert 1==2, \
-            "Il n'y a aucune interface détectée associée à ce fichier (.json dans 2) calcul_puissance)"
+        try:
+            assert 1==2, \
+                "Il n'y a aucune interface détectée associée à ce fichier (.json dans 2) calcul_puissance)"
+        except AssertionError:
+            list_assertion.append("Il n'y a aucune interface détectée associée à ce fichier (.json dans 2) calcul_puissance)")
+            dico_all_error_message["assertions_partie_3"] = list_assertion
 
     except FileNotFoundError:
-        assert 1==2, \
-            "Il n'y a aucune interface détectée associée à ce fichier (.json dans 2) calcul_puissance)"
-
+        try:
+            assert 1==2, \
+                "Il n'y a aucune interface détectée associée à ce fichier (.json dans 2) calcul_puissance)"
+        except AssertionError:
+            list_assertion.append("Il n'y a aucune interface détectée associée à ce fichier (.json dans 2) calcul_puissance)")
+            dico_all_error_message["assertions_partie_3"] = list_assertion
     try:
         with open(dico_all_path["path_to_converted_data_interface_Part_1"], 'r') as f:
             print("ok")
 
     except json.JSONDecodeError:
-        assert 1==2, \
-            "Il n'y a aucune donnée convertie en provenance des capteurs"
+        try:
+            assert 1==2, \
+                "Il n'y a aucune donnée convertie en provenance des capteurs"
+
+        except AssertionError:
+            list_assertion.append("Il n'y a aucune donnée convertie en provenance des capteurs")
+            dico_all_error_message["assertions_partie_3"] = list_assertion
 
     except FileNotFoundError:
-        assert 1==2, \
-            "Il n'y a aucune donnée convertie en provenance des capteurs"
+        try:
+            assert 1==2, \
+                "Il n'y a aucune donnée convertie en provenance des capteurs"
 
+        except AssertionError:
+            list_assertion.append("Il n'y a aucune donnée convertie en provenance des capteurs")
+            dico_all_error_message["assertions_partie_3"] = list_assertion
 
     try:
         with open(dico_all_path["path_to_sous_cycle_data_interface_Part_2"], 'r') as f:
             print("ok")
 
     except json.JSONDecodeError:
-        assert 1==2, \
-            "Il n'y a aucune donnée de calcul de puissance enregistrée"
+        try:
+            assert 1==2, \
+                "Il n'y a aucune donnée de calcul de puissance enregistrée"
+
+        except AssertionError:
+            list_assertion.append("Il n'y a aucune donnée de calcul de puissance enregistrée")
+            dico_all_error_message["assertions_partie_3"] = list_assertion
 
     except FileNotFoundError:
-        assert 1==2, \
-            "Il n'y a aucune donnée de calcul de puissance enregistrée"
+        try:
+            assert 1==2, \
+                "Il n'y a aucune donnée de calcul de puissance enregistrée"
 
+        except AssertionError:
+            list_assertion.append("Il n'y a aucune donnée de calcul de puissance enregistrée")
+            dico_all_error_message["assertions_partie_3"] = list_assertion
 
     try:
 
@@ -1967,18 +2193,23 @@ def interface_part_3(json_name_file, json_name_file_part_2):
     tk.config(menu=selection_bar)
     save_all_manual_entry_button = Button(the_frame, text="Calculer", command=calculate_cycle_power)
     save_all_manual_entry_button.place(x=1200,y=60)
+
+    par_def = Button(the_frame, text="Synchroniser", command=get_coord)
+    par_def.place(x=1350,y=350)
+
+    let_go_section_plot = Button(the_frame, text="Désynchroniser", command=let_go_selection)
+    let_go_section_plot.place(x=1350,y=380)
+
+
     delete_section_plot = Button(the_frame, text="Supprimer", command=delete_selected_part_of_plot)
-    delete_section_plot.place(x=1350,y=380)
+    delete_section_plot.place(x=1350,y=430)
     zoom_section_plot = Button(the_frame, text="Zoomer", command=zoom_to_selected_part_of_plot)
-    zoom_section_plot.place(x=1350,y=410)
-    let_go_section_plot = Button(the_frame, text="Relacher", command=let_go_selection)
-    let_go_section_plot.place(x=1350,y=350)
+    zoom_section_plot.place(x=1350,y=460)
     dezoom = Button(the_frame, text="Dezoomer", command=dezoomer)
-    dezoom.place(x=1350,y=440)
+    dezoom.place(x=1350,y=490)
     par_def = Button(the_frame, text="paramètres par défaut", command=default)
-    par_def.place(x=1350,y=470)
-    par_def = Button(the_frame, text="position souris", command=get_coord)
-    par_def.place(x=1350,y=500)
+    par_def.place(x=1350,y=520)
+    
     
     label_index = Label(the_frame,text="index :                Aucun")
     label_y_mouse = Label(the_frame,text="position en y :   Aucune")
@@ -2011,9 +2242,14 @@ def interface_part_3(json_name_file, json_name_file_part_2):
 
     #validate_button = Button(the_frame, text="Valider", command= lambda : convert_all_data(namefile[1]))
     #validate_button.place(x=1200,y=20)
+    if dico_all_error_message["assertions_partie_3"] != []:
+        fenetre_erreur(dico_all_error_message["assertions_partie_3"],"assertions_partie_3", win_2)
+        tk.destroy()
+
+    tk.protocol("WM_DELETE_WINDOW", end_script)
     tk.mainloop()
 
 if __name__ == "__main__":
-    #print("Cette fonction ne devrait être lancé que par le bouton de l'interface graphique")
-    interface_part_3("essai_2_29_nov.json","essai_2_29_nov_test.json")
+    print("Cette fonction ne devrait être lancé que par le bouton de l'interface graphique")
+    #interface_part_3("essai_2_29_nov.json","essai_2_29_nov_test.json")
     

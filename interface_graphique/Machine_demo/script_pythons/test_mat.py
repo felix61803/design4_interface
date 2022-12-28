@@ -22,11 +22,7 @@ ech_modif = round(factor*ech,10)
 print(factor)
 for i in range(int(new_line)):
     print(my_data[i*factor],ech_modif)
-my_string = "0x18e600fd"
-print(my_string[0:2])
-print(my_string[8:10])
-print(my_string[2:8])
-print(my_string[2:8].isnumeric())
+
 
 
 

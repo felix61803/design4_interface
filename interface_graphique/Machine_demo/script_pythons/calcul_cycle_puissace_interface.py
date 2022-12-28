@@ -287,9 +287,9 @@ def interface_part_2(json_name_file):
             pass
 
         line = obj_line.get()
-        print("Sous Cycle : %s, affiche ligne : %s"%(num, line))
+        #print("Sous Cycle : %s, affiche ligne : %s"%(num, line))
         (header,column) = get_all_column()
-        print(header)
+        #print(header)
         #
            
         try:
@@ -298,9 +298,9 @@ def interface_part_2(json_name_file):
             for sensor in header:
                 list_data_line.append(column[sensor][int(line)-1])
                 dico_calcul[sensor] = column[sensor][int(line)-1]
-            print(header)
-            print(list_data_line)
-            print("dico : ",dico_calcul )
+            #print(header)
+            #print(list_data_line)
+           # print("dico : ",dico_calcul )
             with open(dico_all_path["path_to_json_calculs"], "r") as f:
                 data = json.load(f)
 
@@ -617,7 +617,7 @@ def interface_part_2(json_name_file):
         header_without_time = header[1:len(header)]
 
         my_data = genfromtxt(dico_all_path["path_to_converted_data_interface_Part_1"], delimiter=',', names=True, usecols=tuple(header_without_time), unpack=True)
-        print(my_data)
+        #print(my_data)
         dic = {}
         for i in range(len(header_without_time)):
             dic[header_without_time[i]] = my_data[i]
@@ -626,9 +626,9 @@ def interface_part_2(json_name_file):
     def calculate_sous_cycle_power():
         
         (list_all_sensor, dico_with_all_column) = get_all_column()
-        print(dico_with_all_column)
+        #print(dico_with_all_column)
         list_all_sous_cycle = get_all_sous_cycle_from_file()
-        print(list_all_sous_cycle)
+        #print(list_all_sous_cycle)
         
 
 
@@ -641,13 +641,13 @@ def interface_part_2(json_name_file):
         for sous_cycle in list_all_sous_cycle:
             num_only = sous_cycle.split(' ')
             equation = data[sous_cycle]["math_entry_%s"%(num_only[1])]
-            print(equation)
+            #print(equation)
 
             array_coverted_value = eval(equation,dico_with_all_column)
             list_of_all_array.append(array_coverted_value)
             dico_with_converted_value[sous_cycle] = array_coverted_value
 
-        print(dico_with_converted_value)
+        #print(dico_with_converted_value)
 
         nb_line = []
         for key in list(dico_with_converted_value.keys()):
@@ -671,7 +671,7 @@ def interface_part_2(json_name_file):
                 only_time = list_time[1:len(list_time)]
         #print(only_time)
 
-        print(only_time)
+        #print(only_time)
 
         dictionnary_of_all_lines_in_csv_file = {}
         for i in range(nb_line[0]):
@@ -683,7 +683,7 @@ def interface_part_2(json_name_file):
             dictionnary_of_all_lines_in_csv_file["ligne %s"%(i+1)] = all_column_value
 
 
-        print(dictionnary_of_all_lines_in_csv_file)
+        #print(dictionnary_of_all_lines_in_csv_file)
 
         with open(dico_all_path["path_to_converted_sous_cycle_puissance"], 'w', newline='') as csvfile:
             head_list  = ["Time"]

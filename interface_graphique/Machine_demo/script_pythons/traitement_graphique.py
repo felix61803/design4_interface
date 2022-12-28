@@ -4,6 +4,8 @@ from tkinter.messagebox import showinfo
 import json
 import csv
 import datetime
+import time
+import make_pdf_report as pdf_report
 from unicodedata import name
 from win32api import GetSystemMetrics
 from numpy import genfromtxt
@@ -11,6 +13,8 @@ from numpy import searchsorted
 from numpy import arange
 from numpy import savetxt
 from numpy import c_
+from numpy import array
+from numpy import ndarray
 from matplotlib import pyplot
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
@@ -29,7 +33,7 @@ def interface_part_3(json_name_file, json_name_file_part_2):
 
     dico_fig_cycle_puissance = {}
     dico_all_figs_sous_cycle_puissance = {}
-    dico_plot_cycle_puisance ={}
+    dico_plot_cycle_puissance ={}
     dico_all_plots_sous_cycle_puissance = {}
     dico_x_axis_plots = {}
     dico_y_axis_plot_cycle_puissance = {}
@@ -37,6 +41,9 @@ def interface_part_3(json_name_file, json_name_file_part_2):
     dico_x_axis_plots_deleted = {}
     dico_y_axis_plots_deleted = {}
     dico_all_y_axis_plot_sous_cycle_puissance_deleted = {}
+    dico_line_cycle_puissance = {}
+    dico_line_sous_cycle_puissance = {}
+
     dico_headers = {"cycle":None, "sous_cycles":None}
     dico_canvas_cycle_puissance = {}
     dico_all_canvas_sous_cycle_puissance = {}
@@ -45,14 +52,17 @@ def interface_part_3(json_name_file, json_name_file_part_2):
     dico_format_cam = {"cam1":None, "cam2":None}
     dico_canvas_cam = {"cam1":None, "cam2":None}
     dico_line_and_time = {}
+    dico_data_acquisition = {"Date(s) d'acquisition":[]}
     dico_gps = {}
     dico_label_gps = {}
     dico_entry_gps = {}
+    dico_label_info_mouse_position = {"index":None,"position en y":None,"Temps":None,"puissance":None,"Image 1":None,"Image 2":None,"GPS":None}
 
-
+    nb_graph_by_page = 3
 
 
     dico_scrollbar = {}
+
 
     def find_the_config_file_path(date):
 
@@ -318,7 +328,7 @@ def interface_part_3(json_name_file, json_name_file_part_2):
         dataArray0 = genfromtxt(data["all_paths"]["path_to_converted_cycle_puissance"], delimiter=',',usecols=tuple(header_without_time0),names=True)
         print(len(dataArray0))
         x_val = arange(1, len(dataArray0)+1, 1)
-        y_val_10 = dataArray0[dataArray0.dtype.names[0]]
+        y_val = dataArray0[dataArray0.dtype.names[0]]
 
         with open(data["all_paths"]["path_to_sous_cycle_data_interface_Part_2"], newline='') as csvfile:
             reader = csv.DictReader(csvfile)
@@ -350,13 +360,22 @@ def interface_part_3(json_name_file, json_name_file_part_2):
             data = json.load(f)
 
         dico_line_and_time.clear()
+        dico_data_acquisition.clear()
+        dico_data_acquisition["Date(s) d'acquisition"] = []
+
         count = 1
         if data["all_paths"]["path_to_suppressed_cycle_file"] == "init":
             with open(data["all_paths"]["path_to_converted_cycle_puissance"], newline='') as csvfile:
                 reader = csv.DictReader(csvfile)
                 for line in reader:
                     dico_line_and_time["%s"%(count)] = line["Time"]
+                    get_only_date = line["Time"].split("_")
+                    if get_only_date[0] not in dico_data_acquisition["Date(s) d'acquisition"]:
+                        dico_data_acquisition["Date(s) d'acquisition"].append(get_only_date[0])
                     count+=1
+
+            data["duree acquisiiton"] = [dico_line_and_time["1"],dico_line_and_time["%s"%(count-1)]]
+
         elif data["all_paths"]["path_to_suppressed_cycle_file"] == "delete":
             name_file = data["all_paths"]["name_of_the_interface_3_file"]
             name_file = name_file.split(".json")
@@ -367,7 +386,13 @@ def interface_part_3(json_name_file, json_name_file_part_2):
                 reader = csv.DictReader(csvfile)
                 for line in reader:
                     dico_line_and_time["%s"%(count)] = line["Time"]
+                    get_only_date = line["Time"].split("_")
+                    if get_only_date[0] not in dico_data_acquisition["Date(s) d'acquisition"]:
+                        dico_data_acquisition["Date(s) d'acquisition"].append(get_only_date[0])
                     count+=1
+# verif
+        if ((len(dico_data_acquisition["Date(s) d'acquisition"]) == 1) or (len(dico_data_acquisition["Date(s) d'acquisition"]) == 2)) is False:
+            print("Il ne devrait y avoir qu'au plus 2 dates différentes")
 
         photo_canvas_1 = Canvas(the_frame)
         dico_canvas_cam["cam1"] = photo_canvas_1 
@@ -410,8 +435,8 @@ def interface_part_3(json_name_file, json_name_file_part_2):
         print(len(dataArray0))
         x_val = arange(1, len(dataArray0)+1, 1)
         dico_x_axis_plots["x_val"] = x_val
-        y_val_10 = dataArray0[dataArray0.dtype.names[0]]
-        dico_y_axis_plot_cycle_puissance["y_val_10"] = y_val_10
+        y_val = dataArray0[dataArray0.dtype.names[0]]
+        dico_y_axis_plot_cycle_puissance["y_val"] = y_val
 
         if data["all_paths"]["path_to_suppressed_sous_cycle_file"] == "init":
             with open(data["all_paths"]["path_to_sous_cycle_data_interface_Part_2"], newline='') as csvfile:
@@ -440,9 +465,12 @@ def interface_part_3(json_name_file, json_name_file_part_2):
         fig0 = Figure(figsize = (10,3), dpi = 100)
         dico_fig_cycle_puissance["fig0"] = fig0
         plot0 = dico_fig_cycle_puissance["fig0"].add_subplot(1,1,1)
-        dico_plot_cycle_puisance["plot0"] = plot0
-        dico_plot_cycle_puisance["plot0"].plot(dico_x_axis_plots["x_val"], dico_y_axis_plot_cycle_puissance["y_val_10"], label=dataArray.dtype.names[0])
-        dico_plot_cycle_puisance["plot0"].set_title(dataArray0.dtype.names[0])
+        dico_plot_cycle_puissance["plot0"] = plot0
+        dico_plot_cycle_puissance["plot0"].plot(dico_x_axis_plots["x_val"], dico_y_axis_plot_cycle_puissance["y_val"], label=dataArray0.dtype.names[0])
+        dico_plot_cycle_puissance["plot0"].set_title(dataArray0.dtype.names[0])
+        dico_plot_cycle_puissance["plot0"].set_xlabel("index de l'échantillon")
+        dico_plot_cycle_puissance["plot0"].set_ylabel("puissance (W)")
+        dico_plot_cycle_puissance["plot0"].legend(loc="upper right")
         if data["all_paths"]["path_to_suppressed_sous_cycle_file"] == "init":
             data["Valeur_initiale_x_zoom"] = str(dico_x_axis_plots["x_val"][0])
             data["valeur_finale_x_zoom"] = str(dico_x_axis_plots["x_val"][len(dico_x_axis_plots["x_val"])-1])
@@ -491,9 +519,12 @@ def interface_part_3(json_name_file, json_name_file_part_2):
             dico_all_figs_sous_cycle_puissance["fig%s"%(i+1)] = Figure(figsize = (5,5), dpi = 100)
             dico_all_plots_sous_cycle_puissance["plot%s"%(i+1)] = dico_all_figs_sous_cycle_puissance["fig%s"%(i+1)].add_subplot(1,1,1)
 
-            dico_all_plots_sous_cycle_puissance["plot%s"%(i+1)].sharex(dico_plot_cycle_puisance["plot0"])
+            dico_all_plots_sous_cycle_puissance["plot%s"%(i+1)].sharex(dico_plot_cycle_puissance["plot0"])
             dico_all_plots_sous_cycle_puissance["plot%s"%(i+1)].plot(dico_x_axis_plots["x_val"], dico_all_y_axis_plot_sous_cycle_puissance["y_val_%s"%(i+1)], label=dataArray.dtype.names[i])
             dico_all_plots_sous_cycle_puissance["plot%s"%(i+1)].set_title(dataArray.dtype.names[i])
+            dico_all_plots_sous_cycle_puissance["plot%s"%(i+1)].set_xlabel("index de l'échantillon")
+            dico_all_plots_sous_cycle_puissance["plot%s"%(i+1)].set_ylabel("Puissance (W)")
+            dico_all_plots_sous_cycle_puissance["plot%s"%(i+1)].legend(loc="upper right")
             dico_all_canvas_sous_cycle_puissance["canvas%s"%(i+1)] = FigureCanvasTkAgg(dico_all_figs_sous_cycle_puissance["fig%s"%(i+1)], master=forth_frame)
         
 
@@ -523,6 +554,7 @@ def interface_part_3(json_name_file, json_name_file_part_2):
             data = json.load(f)
         
         data["affichage"] = "oui"
+        data["Date(s)"] = dico_data_acquisition["Date(s) d'acquisition"]
         with open(dico_all_path["path_to_json_traitement"], 'w') as file:
                 json.dump(data, file, indent = 6)
 
@@ -539,10 +571,14 @@ def interface_part_3(json_name_file, json_name_file_part_2):
         header_without_time = header[1:len(header)]
 
         my_data = genfromtxt(data["all_paths"]["path_to_sous_cycle_data_interface_Part_2"], delimiter=',', names=True, usecols=tuple(header_without_time), unpack=True)
-        #print(my_data)
         dic = {}
-        for i in range(len(header_without_time)):
-            dic[header_without_time[i]] = my_data[i]
+        if type(my_data[0]) == ndarray:
+            for i in range(len(header_without_time)):
+                dic[header_without_time[i]] = my_data[i]
+        else:
+            dic[header_without_time[0]] = array(my_data)
+
+        print("dic",dic)
         return (header_without_time,dic)
 
     def calculate_cycle_power():
@@ -552,16 +588,16 @@ def interface_part_3(json_name_file, json_name_file_part_2):
         with open(dico_all_path["path_to_json_traitement"], "r") as f:
             data = json.load(f)
 
-        #print(header_list)
-        #print(dico_data)
         calcul_string = ""
+        print(len(header_list))
         for column_name in header_list:
             calcul_string += column_name + "+"
-        #print(calcul_string[0:len(calcul_string)-1])
+        print(eval(calcul_string[0:len(calcul_string)-1],dico_data))
 
         array_power_data = eval(calcul_string[0:len(calcul_string)-1],dico_data)
+
         nb_line = len(array_power_data)
-        #print("nb_line : ", nb_line)
+        
         list_time = []
         with open(data["all_paths"]["path_to_converted_data_interface_Part_1"], newline='') as csvfile:
             for each_row in csvfile:
@@ -633,7 +669,7 @@ def interface_part_3(json_name_file, json_name_file_part_2):
 
         thisx = dico_x_axis_plots["x_val"][indmin:indmax]
         print("thisx : ",thisx)
-        thisy = dico_y_axis_plot_cycle_puissance["y_val_10"][indmin:indmax]
+        thisy = dico_y_axis_plot_cycle_puissance["y_val"][indmin:indmax]
         #print("thisy : ",thisy)
 #            line2.set_data(thisx, thisy)
 #            fig2.set_xlim(thisx[0], thisx[-1])
@@ -646,11 +682,16 @@ def interface_part_3(json_name_file, json_name_file_part_2):
         if data["all_paths"]["path_to_suppressed_cycle_file"] == "init":
 
             dico_line_and_time.clear()
+            dico_data_acquisition.clear()
+            dico_data_acquisition["Date(s) d'acquisition"] = []
             count = 1
             with open(data["all_paths"]["path_to_converted_cycle_puissance"], newline='') as csvfile:
                 reader = csv.DictReader(csvfile)
                 for line in reader:
                     dico_line_and_time["%s"%(count)] = line["Time"]
+                    get_only_date = line["Time"].split("_")
+                    if get_only_date[0] not in dico_data_acquisition["Date(s) d'acquisition"]:
+                        dico_data_acquisition["Date(s) d'acquisition"].append(get_only_date[0])
                     count+=1
 
             
@@ -678,11 +719,16 @@ def interface_part_3(json_name_file, json_name_file_part_2):
         elif data["all_paths"]["path_to_suppressed_cycle_file"] == "delete":
 
             dico_line_and_time.clear()
+            dico_data_acquisition.clear()
+            dico_data_acquisition["Date(s) d'acquisition"] = []
             count = 1
             with open(path_to_suppress_total_cycle, newline='') as csvfile:
                 reader = csv.DictReader(csvfile)
                 for line in reader:
                     dico_line_and_time["%s"%(count)] = line["Time"]
+                    get_only_date = line["Time"].split("_")
+                    if get_only_date[0] not in dico_data_acquisition["Date(s) d'acquisition"]:
+                        dico_data_acquisition["Date(s) d'acquisition"].append(get_only_date[0])
                     count+=1
 
             with open(path_to_suppress_total_cycle, newline='') as csvfile:
@@ -712,8 +758,14 @@ def interface_part_3(json_name_file, json_name_file_part_2):
                 print("count",count_line)
 
             data["all_paths"]["path_to_suppressed_cycle_file"] = "delete"
+            
 
             with open(dico_all_path["path_to_json_traitement"], 'w') as file:
+                json.dump(data, file, indent = 6)
+
+        data["Date(s)"] = dico_data_acquisition["Date(s) d'acquisition"]
+        
+        with open(dico_all_path["path_to_json_traitement"], 'w') as file:
                 json.dump(data, file, indent = 6)
 
         print("Enregistrement effectué sans problème dans : ", "z_" + name_file[0] + "_total_cycle_apres_suppression.csv")
@@ -782,16 +834,16 @@ def interface_part_3(json_name_file, json_name_file_part_2):
         #print(len(dataArray_new))
         x_val_new = arange(1, len(dataArray_new)+1, 1)
         dico_x_axis_plots_deleted["x_val_new"] = x_val_new
-        y_val_10_new = dataArray_new[dataArray_new.dtype.names[0]]
-        dico_y_axis_plots_deleted["y_val_new"] = y_val_10_new
+        y_val_new = dataArray_new[dataArray_new.dtype.names[0]]
+        dico_y_axis_plots_deleted["y_val_new"] = y_val_new
         print(len(dico_x_axis_plots_deleted["x_val_new"]))
         print(len(dico_y_axis_plots_deleted["y_val_new"]))
-        #dico_plot_cycle_puisance["plot0"].set_data(dico_x_axis_plots_deleted["x_val_new"],dico_y_axis_plots_deleted["y_val_new"])
+        #dico_plot_cycle_puissance["plot0"].set_data(dico_x_axis_plots_deleted["x_val_new"],dico_y_axis_plots_deleted["y_val_new"])
         dico_fig_cycle_puissance["fig0"].clf()
         plot0 = dico_fig_cycle_puissance["fig0"].add_subplot(1,1,1)
-        dico_plot_cycle_puisance["plot0"] = plot0
-        dico_plot_cycle_puisance["plot0"].plot(dico_x_axis_plots_deleted["x_val_new"], dico_y_axis_plots_deleted["y_val_new"], label=dataArray_new.dtype.names[0])
-        dico_plot_cycle_puisance["plot0"].set_title(dataArray_new.dtype.names[0])
+        dico_plot_cycle_puissance["plot0"] = plot0
+        dico_plot_cycle_puissance["plot0"].plot(dico_x_axis_plots_deleted["x_val_new"], dico_y_axis_plots_deleted["y_val_new"], label=dataArray_new.dtype.names[0])
+        dico_plot_cycle_puissance["plot0"].set_title(dataArray_new.dtype.names[0])
         dico_fig_cycle_puissance["fig0"].canvas.draw_idle()
 
 
@@ -809,13 +861,13 @@ def interface_part_3(json_name_file, json_name_file_part_2):
             dico_all_y_axis_plot_sous_cycle_puissance_deleted["y_val_new%s"%(i+1)] = dataArray_sous_cycle_new[dataArray_sous_cycle_new.dtype.names[i]]
         print(len(dico_x_axis_plots_deleted["x_val_new"]))
         print(len(dico_all_y_axis_plot_sous_cycle_puissance_deleted["y_val_new1"]))
-        print(len(dico_all_y_axis_plot_sous_cycle_puissance_deleted["y_val_new2"]))
+        #print(len(dico_all_y_axis_plot_sous_cycle_puissance_deleted["y_val_new2"]))
         count = 0
         for i in range(num_column):
             dico_all_figs_sous_cycle_puissance["fig%s"%(i+1)].clf()
             dico_all_plots_sous_cycle_puissance["plot%s"%(i+1)] = dico_all_figs_sous_cycle_puissance["fig%s"%(i+1)].add_subplot(1,1,1)
 
-            dico_all_plots_sous_cycle_puissance["plot%s"%(i+1)].sharex(dico_plot_cycle_puisance["plot0"])
+            dico_all_plots_sous_cycle_puissance["plot%s"%(i+1)].sharex(dico_plot_cycle_puissance["plot0"])
             dico_all_plots_sous_cycle_puissance["plot%s"%(i+1)].plot(dico_x_axis_plots_deleted["x_val_new"], dico_all_y_axis_plot_sous_cycle_puissance_deleted["y_val_new%s"%(i+1)], label=dataArray_sous_cycle_new.dtype.names[i])
             dico_all_plots_sous_cycle_puissance["plot%s"%(i+1)].set_title(dataArray_sous_cycle_new.dtype.names[i])
             dico_all_figs_sous_cycle_puissance["fig%s"%(i+1)].canvas.draw_idle()
@@ -846,6 +898,10 @@ def interface_part_3(json_name_file, json_name_file_part_2):
             os.remove(path_to_suppress_sous_cycle)
         except FileNotFoundError:
             print("Les paramètres actuelles sont déjà les paramètres par défault")
+        
+        dico_x_axis_plots_deleted.clear()
+        dico_y_axis_plots_deleted.clear()
+        dico_all_y_axis_plot_sous_cycle_puissance_deleted.clear()
 
         print("Les fichiers de données avec sélections ont été supprimés")
 
@@ -868,15 +924,15 @@ def interface_part_3(json_name_file, json_name_file_part_2):
 #        print(len(dataArray_init))
 #        x_val = arange(1, len(dataArray_init)+1, 1)
 #        dico_x_axis_plots["x_val"] = x_val
-#        y_val_10 = dataArray_init[dataArray_init.dtype.names[0]]
-#        dico_y_axis_plot_cycle_puissance["y_val"] = y_val_10
+#        y_val = dataArray_init[dataArray_init.dtype.names[0]]
+#        dico_y_axis_plot_cycle_puissance["y_val"] = y_val
 #
-#        #dico_plot_cycle_puisance["plot0"].set_data(dico_x_axis_plots_deleted["x_val_new"],dico_y_axis_plots_deleted["y_val_new"])
+#        #dico_plot_cycle_puissance["plot0"].set_data(dico_x_axis_plots_deleted["x_val_new"],dico_y_axis_plots_deleted["y_val_new"])
 #        dico_fig_cycle_puissance["fig0"].clf()
 #        plot0 = dico_fig_cycle_puissance["fig0"].add_subplot(1,1,1)
-#        dico_plot_cycle_puisance["plot0"] = plot0
-#        dico_plot_cycle_puisance["plot0"].plot(dico_x_axis_plots["x_val"], dico_y_axis_plot_cycle_puissance["y_val"], label=dataArray_init.dtype.names[0])
-#        dico_plot_cycle_puisance["plot0"].set_title(dataArray_init.dtype.names[0])
+#        dico_plot_cycle_puissance["plot0"] = plot0
+#        dico_plot_cycle_puissance["plot0"].plot(dico_x_axis_plots["x_val"], dico_y_axis_plot_cycle_puissance["y_val"], label=dataArray_init.dtype.names[0])
+#        dico_plot_cycle_puissance["plot0"].set_title(dataArray_init.dtype.names[0])
 #        dico_fig_cycle_puissance["fig0"].canvas.draw_idle()
 #
 #
@@ -898,7 +954,7 @@ def interface_part_3(json_name_file, json_name_file_part_2):
 #            dico_all_figs_sous_cycle_puissance["fig%s"%(i+1)].clf()
 #            dico_all_plots_sous_cycle_puissance["plot%s"%(i+1)] = dico_all_figs_sous_cycle_puissance["fig%s"%(i+1)].add_subplot(1,1,1)
 #
-#            dico_all_plots_sous_cycle_puissance["plot%s"%(i+1)].sharex(dico_plot_cycle_puisance["plot0"])
+#            dico_all_plots_sous_cycle_puissance["plot%s"%(i+1)].sharex(dico_plot_cycle_puissance["plot0"])
 #            dico_all_plots_sous_cycle_puissance["plot%s"%(i+1)].plot(dico_x_axis_plots["x_val"], dico_all_y_axis_plot_sous_cycle_puissance["y_val_%s"%(i+1)], label=dataArray_sous_cycle.dtype.names[i])
 #            dico_all_plots_sous_cycle_puissance["plot%s"%(i+1)].set_title(dataArray_sous_cycle.dtype.names[i])
 #            dico_all_figs_sous_cycle_puissance["fig%s"%(i+1)].canvas.draw_idle()
@@ -924,11 +980,11 @@ def interface_part_3(json_name_file, json_name_file_part_2):
         #print("indmax : ",indmax )
         indmax = min(len(dico_x_axis_plots["x_val"]) - 1, indmax)
         print("indmax et idmin: ",indmax, indmin)
-        dico_plot_cycle_puisance["plot0"].set_xlim([indmin, indmax])
+        dico_plot_cycle_puissance["plot0"].set_xlim([indmin, indmax])
 
         thisx = dico_x_axis_plots["x_val"][indmin:indmax]
         print("thisx : ",thisx)
-        thisy = dico_y_axis_plot_cycle_puissance["y_val_10"][indmin:indmax]
+        thisy = dico_y_axis_plot_cycle_puissance["y_val"][indmin:indmax]
         #print("thisy : ",thisy)
 #            line2.set_data(thisx, thisy)
 #            fig2.set_xlim(thisx[0], thisx[-1])
@@ -961,13 +1017,13 @@ def interface_part_3(json_name_file, json_name_file_part_2):
         with open(dico_all_path["path_to_json_traitement"], "r") as f:
             data = json.load(f)
         #print(dico_x_axis_plots["x_val"][0],dico_x_axis_plots["x_val"][len(dico_x_axis_plots["x_val"])-1])
-        dico_plot_cycle_puisance["plot0"].set_xlim([float(data["Valeur_initiale_x_zoom"]),float(data["valeur_finale_x_zoom"])])
+        dico_plot_cycle_puissance["plot0"].set_xlim([float(data["Valeur_initiale_x_zoom"]),float(data["valeur_finale_x_zoom"])])
         dico_fig_cycle_puissance["fig0"].canvas.draw_idle()
 
     def delete_selected_part_of_plot():
         print("delete yeah")
 #
-        span = SpanSelector(dico_plot_cycle_puisance["plot0"], span_select_function, 'horizontal', useblit=True,
+        span = SpanSelector(dico_plot_cycle_puissance["plot0"], span_select_function, 'horizontal', useblit=True,
                     rectprops=dict(alpha=0.5, facecolor='red'))
 
         dico_selection["int1"] = dico_canvas_cycle_puissance["canvas"].mpl_connect('key_press_event', span)
@@ -976,7 +1032,7 @@ def interface_part_3(json_name_file, json_name_file_part_2):
 
 
     def zoom_to_selected_part_of_plot():
-        span = SpanSelector(dico_plot_cycle_puisance["plot0"], span_select_function_zoom, 'horizontal', useblit=True,
+        span = SpanSelector(dico_plot_cycle_puissance["plot0"], span_select_function_zoom, 'horizontal', useblit=True,
                     rectprops=dict(alpha=0.5, facecolor='green'))
 
         dico_selection["int2"] = dico_canvas_cycle_puissance["canvas"].mpl_connect('key_press_event', span)
@@ -996,8 +1052,20 @@ def interface_part_3(json_name_file, json_name_file_part_2):
 
         if event.inaxes:
             print("position en x : ",int(event.xdata))
+            print("position en y : ", float(event.ydata))
+            dico_label_info_mouse_position["index"].config(text="index :                %s"%(int(event.xdata)))
+            dico_label_info_mouse_position["position en y"].config(text="position en y :   %s"%(float(event.ydata)))
+            if dico_x_axis_plots_deleted != {}:
+                get_puissance_associated = dico_y_axis_plots_deleted["y_val_new"][int(event.xdata)]
+            else:
+                get_puissance_associated = dico_y_axis_plot_cycle_puissance["y_val"][int(event.xdata)]
+            print("position en y 2 : ", get_puissance_associated)
+            dico_label_info_mouse_position["puissance"].config(text="puissance :        %s"%(get_puissance_associated))
+
+
             try:
                 print("Temps : ",dico_line_and_time[str(int(event.xdata))])
+                dico_label_info_mouse_position["Temps"].config(text="temps :               %s"%(dico_line_and_time[str(int(event.xdata))]))
             except KeyError:
                 print("aucune donnée de puissance dans cette partie du graphique")
         
@@ -1005,6 +1073,7 @@ def interface_part_3(json_name_file, json_name_file_part_2):
         #cam_1= Image.open("C:\\Users\\felix\\Desktop\\Design4\\Design_4\\interface_graphique\\Machine_demo\\3) traitement_donnes\\fichiers_enregistrements\\Itachi.webp")
         try:
             print("Image 1 : ",dico_format_cam["cam1"][dico_line_and_time[str(int(event.xdata))]])
+            dico_label_info_mouse_position["Image 1"].config(text="image 1 :            %s"%(dico_format_cam["cam1"][dico_line_and_time[str(int(event.xdata))]]))
             cam_1= Image.open(data["all_paths"]["path_camera_1"] + "\\"+dico_format_cam["cam1"][dico_line_and_time[str(int(event.xdata))]])
             #Resize the Image using resize method
             resized_image= cam_1.resize((500,300), Image.Resampling.LANCZOS)
@@ -1014,6 +1083,7 @@ def interface_part_3(json_name_file, json_name_file_part_2):
             dico_canvas_cam["cam1"].create_image(0,0, anchor=NW, image=new_image)
         except KeyError:
             print("Aucune image 1 associée")
+            dico_label_info_mouse_position["Image 1"].config(text="image 1 :            %s"%("Aucune image 1 associée"))
 
         except TypeError:
             print("à l'extérieur du graphique")
@@ -1022,6 +1092,7 @@ def interface_part_3(json_name_file, json_name_file_part_2):
         #cam_2= Image.open("C:\\Users\\felix\\Desktop\\Design4\\Design_4\\interface_graphique\\Machine_demo\\3) traitement_donnes\\fichiers_enregistrements\\Itachi.webp")
         try:
             print("Image 2 : ",dico_format_cam["cam1"][dico_line_and_time[str(int(event.xdata))]])
+            dico_label_info_mouse_position["Image 2"].config(text="image 2 :            %s"%(dico_format_cam["cam1"][dico_line_and_time[str(int(event.xdata))]]))
             cam_2= Image.open(data["all_paths"]["path_camera_2"] + "\\"+dico_format_cam["cam2"][dico_line_and_time[str(int(event.xdata))]])
 
             #Resize the Image using resize method
@@ -1032,6 +1103,7 @@ def interface_part_3(json_name_file, json_name_file_part_2):
             dico_canvas_cam["cam2"].create_image(0,0, anchor=NW, image=new_image_2)
         except KeyError:
             print("Aucune image 2 associée")
+            dico_label_info_mouse_position["Image 2"].config(text="image 2 :            %s"%("Aucune image 2 associée"))
         
         except TypeError:
             print("à l'extérieur du graphique")
@@ -1039,10 +1111,12 @@ def interface_part_3(json_name_file, json_name_file_part_2):
         try:
             gps_value = dico_gps[dico_line_and_time[str(int(event.xdata))]]
             print("GPS : ", gps_value)
+            dico_label_info_mouse_position["GPS"].config(text="GPS :                   %s"%(dico_gps[dico_line_and_time[str(int(event.xdata))]]))
             dico_entry_gps["gps"].delete(0,END)
             dico_entry_gps["gps"].insert(0,gps_value)
         except KeyError:
             print("Aucune position GPS associée")
+            dico_label_info_mouse_position["GPS"].config(text="GPS :                   Aucune position GPS associée")
         
         except TypeError:
             print("à l'extérieur du graphique")
@@ -1155,14 +1229,19 @@ def interface_part_3(json_name_file, json_name_file_part_2):
 
         print("gps importé")
 
-    def close_win_export_calculator(win,obj_entry):
+    def close_win_export_calculator(win,obj_entry,obj_nb_line,list_all_cycle):
+
+        nb_line_wanted = int(obj_nb_line.cget("text"))
+        print(nb_line_wanted)
+
+        print(type(nb_line_wanted))
         time_stamp_calculator = float(obj_entry.get())
         win.destroy()
         print(time_stamp_calculator)
 
         with open(dico_all_path["path_to_json_traitement"], "r") as f:
             data = json.load(f)
-
+        factor_echant = data["facteur_echantillonnage"]
         name_file = data["all_paths"]["name_of_the_interface_3_file"]
         name_file = name_file.split(".json")
 
@@ -1178,6 +1257,10 @@ def interface_part_3(json_name_file, json_name_file_part_2):
         print(type(power_file.name))
         print(str(power_file.name))
 
+        print(len(list_all_cycle))
+        print(factor_echant)
+        print(nb_line_wanted)
+
 
         if data["all_paths"]["path_to_suppressed_cycle_file"] == "init":
             list_line_csv = []
@@ -1185,11 +1268,11 @@ def interface_part_3(json_name_file, json_name_file_part_2):
             with open(data["all_paths"]["path_to_converted_cycle_puissance"], newline='') as csvfile:
                 reader = csv.DictReader(csvfile)
                 header = reader.fieldnames
-                for line in reader:
-                    if float(line[header[1]]) < 0:
-                        list_line_csv.append({"Puissance":line[header[1]],"recuperation":"x","duree":"%s"%(time_stamp_calculator)})
+                for i in range(nb_line_wanted):
+                    if list_all_cycle[i*factor_echant] < 0:
+                        list_line_csv.append({"Puissance":list_all_cycle[i*factor_echant],"recuperation":"x","duree":"%s"%(time_stamp_calculator)})
                     else:
-                        list_line_csv.append({"Puissance":line[header[1]],"recuperation":" ","duree":"%s"%(time_stamp_calculator)})
+                        list_line_csv.append({"Puissance":list_all_cycle[i*factor_echant],"recuperation":" ","duree":"%s"%(time_stamp_calculator)})
 
             
 
@@ -1200,7 +1283,7 @@ def interface_part_3(json_name_file, json_name_file_part_2):
                 writer.writeheader()
 
                 for line in list_line_csv:
-                    writer.writerow(line)                   
+                    writer.writerow(line)                  
                 
             print("Enregistrement effectué sans problème dans : ", only_name)
             print("non supress")
@@ -1215,11 +1298,11 @@ def interface_part_3(json_name_file, json_name_file_part_2):
                 reader = csv.DictReader(csvfile)
                 header = reader.fieldnames
                 
-                for line in reader:
-                    if float(line[header[1]]) < 0:
-                        list_line_csv.append({"Puissance":line[header[1]],"recuperation":"x","duree":"%s"%(time_stamp_calculator)})
+                for i in range(nb_line_wanted):
+                    if list_all_cycle[i*factor_echant] < 0:
+                        list_line_csv.append({"Puissance":list_all_cycle[i*factor_echant],"recuperation":"x","duree":"%s"%(time_stamp_calculator)})
                     else:
-                        list_line_csv.append({"Puissance":line[header[1]],"recuperation":" ","duree":"%s"%(time_stamp_calculator)})
+                        list_line_csv.append({"Puissance":list_all_cycle[i*factor_echant],"recuperation":" ","duree":"%s"%(time_stamp_calculator)})
 
             
 
@@ -1234,6 +1317,74 @@ def interface_part_3(json_name_file, json_name_file_part_2):
                 
             print("Enregistrement effectué sans problème dans : ", only_name)
             print("supress")
+
+    def get_factor_and_new_ech(obj_ech,obj_nb_line,obj_nb_line_calculate,obj_new_ech,len_cycle_puissance_data,limit_exceed=None):
+
+        with open(dico_all_path["path_to_json_traitement"], "r") as f:
+            data = json.load(f)
+
+        if limit_exceed == None:
+            ech_init = float(obj_ech.get())
+            nb_line = int(obj_nb_line.get())
+            mod = len_cycle_puissance_data%nb_line
+            factor = len_cycle_puissance_data/nb_line
+            print(factor)
+            if mod == 0:
+                factor = int(factor)
+            else:
+                factor = int(factor)+1
+
+            new_line = len_cycle_puissance_data/factor
+            print("new nb_line : ",int(new_line))
+
+            ech_modif = round(factor*ech_init,10)
+
+            print(factor,ech_modif)
+
+            data["facteur_echantillonnage"] = factor
+            with open(dico_all_path["path_to_json_traitement"], 'w') as file:
+                json.dump(data, file, indent = 6)
+
+
+        
+            #obj_nb_line.delete(0,END)
+            obj_new_ech.delete(0,END)
+            #obj_nb_line.insert(0,int(new_line))
+            obj_new_ech.insert(0,ech_modif)
+            obj_nb_line_calculate.config(text="%s"%(int(new_line)))
+
+        elif limit_exceed == 1:
+            ech_init = float(obj_ech.get())
+            nb_line = 1048559
+            mod = len_cycle_puissance_data%nb_line
+            factor = len_cycle_puissance_data/nb_line
+            print(factor)
+            if mod == 0:
+                factor = int(factor)
+            else:
+                factor = int(factor)+1
+
+            new_line = len_cycle_puissance_data/factor
+            print("new nb_line : ",int(new_line))
+
+            ech_modif = round(factor*ech_init,10)
+
+            data["facteur_echantillonnage"] = factor
+            with open(dico_all_path["path_to_json_traitement"], 'w') as file:
+                json.dump(data, file, indent = 6)
+
+            obj_ech.delete(0,END)
+            obj_nb_line.delete(0,END)
+            obj_new_ech.delete(0,END)
+            obj_ech.insert(0,ech_modif)
+            obj_nb_line.insert(0,int(new_line))
+            obj_new_ech.insert(0,ech_modif)
+            obj_nb_line_calculate.config(text="%s"%(int(new_line)))
+
+
+        #return (int(new_line),factor,ech_modif)
+        #for i in range(int(new_line)):
+        #    print(my_data[i*factor],ech_modif)
 
     def export_data_for_calculator():
 
@@ -1250,7 +1401,7 @@ def interface_part_3(json_name_file, json_name_file_part_2):
                 count = 1
                 index = 0
                 for line in reader:
-                    sep = line["Time"].split(".")
+                    sep = line[header[0]].split(".")
                     all_but_second = ".".join(sep[0:len(sep)-1])
                     only_second = sep[2]
                     #print(all_but_second,only_second)
@@ -1269,7 +1420,6 @@ def interface_part_3(json_name_file, json_name_file_part_2):
                         list_nb_data_second.append(count)
 
                         #print("change")
-
         print(list_nb_data_second)
         total_for_mean = len(list_nb_data_second)-3
         val_sum = list_nb_data_second[2]
@@ -1277,8 +1427,18 @@ def interface_part_3(json_name_file, json_name_file_part_2):
             val_sum += number
         mean = val_sum/total_for_mean
 
-        
+        data["facteur_echantillonnage"] = 1
+        with open(dico_all_path["path_to_json_traitement"], 'w') as file:
+            json.dump(data, file, indent = 6)
 
+        
+        if dico_y_axis_plots_deleted != {}:
+            list_all_cycle_puissance = dico_y_axis_plots_deleted["y_val_new"]
+        else:
+            list_all_cycle_puissance = dico_y_axis_plot_cycle_puissance["y_val"]
+    
+        nb_line = len(list_all_cycle_puissance)
+        
 #        the_frame_level_2 = Toplevel(the_frame, padx=125, pady=130)
 #        the_frame_level_2.minsize(width=700,height=400)
 #
@@ -1293,14 +1453,19 @@ def interface_part_3(json_name_file, json_name_file_part_2):
 #        scrolly.pack(side=RIGHT, fill=Y)
 #        txt["yscrollcommand"] = scrolly.set
 
+        with open(data["all_paths"]["path_to_taille_interface_3"], 'r') as f:
+            data_taille = json.load(f)
+
         the_frame_level_2 = Toplevel(the_frame, padx=125, pady=130)
-        the_frame_level_2.minsize(width=700,height=400)
+        the_frame_level_2.minsize(width=data_taille["windows_width"],height=data_taille["windows_length"])
 
         txt = Text(the_frame_level_2)
-        txt.grid(row = 0, column = 0)
+        #txt.grid(row = 0, column = 0)
+        txt.place(x=0, y=0, width=data_taille["windows_width"]/2, height=data_taille["windows_length"]/2)
 
         scrolly = Scrollbar(the_frame_level_2, orient=VERTICAL)
-        scrolly.grid(row = 0, column = 1, sticky="w")        
+        #scrolly.grid(row = 0, column = 1, sticky="w")
+        scrolly.pack(side= RIGHT,fill=Y)       
         
 
         txt.insert(END, "liste de la quantité de données reçu par seconde (sans la première et la dernière)")
@@ -1315,22 +1480,255 @@ def interface_part_3(json_name_file, json_name_file_part_2):
         txt.insert(END, list_nb_data_second[2:len(list_nb_data_second)-1])
         txt.insert(END,"\n")
 
-        scrolly.config(command = txt.yview)
-        
         txt["yscrollcommand"] = scrolly.set
+        scrolly.config(command = txt.yview)
+        #scrolly.configure(height=1000)
 
+        #nb_line = 1048567-8 + 1100000
+        label_max_data = Label(the_frame_level_2, text="nombre de lignes de données maximal accepté : %s"%(1048567-8))
+        label_nb_data = Label(the_frame_level_2, text="nombre de lignes de données : %s"%(nb_line))
         label_entry = Label(the_frame_level_2, text="valeur de durée:")
         manual_entry = Entry(the_frame_level_2,width=30)
         manual_entry.insert(0,str(1/round(mean)))
-        close_button = Button(the_frame_level_2, text="Terminer", command= lambda : close_win_export_calculator(the_frame_level_2,manual_entry))
+        nb_line_max_label = Label(the_frame_level_2, text="nombre de ligne maximal désiré:")
+        max_number_of_line = Entry(the_frame_level_2,width=30)
+        max_number_of_line.insert(0,nb_line)
+        add_line = Label(the_frame_level_2, text="___________________________________________")
+        nb_line_max_reel = Label(the_frame_level_2, text="nombre de ligne maximal possible : ")
+        possible_max_number_of_line = Label(the_frame_level_2,text="%s"%(nb_line))
+        #possible_max_number_of_line.insert(0,nb_line)
+        new_ech_label = Label(the_frame_level_2, text="valeur de durée recalculée:")
+        new_echant = Entry(the_frame_level_2,width=30)
+        new_echant.insert(0,str(1/round(mean)))
 
-        label_entry.grid(row = 1, column = 2, padx = 30,pady =10)
-        manual_entry.grid(row = 2, column = 2, padx = 30,pady =10)
-        close_button.grid(row = 0, column = 2)
+        calculate_button = Button(the_frame_level_2, text="Calculer", command= lambda : get_factor_and_new_ech(manual_entry,max_number_of_line,possible_max_number_of_line,new_echant,len(list_all_cycle_puissance)))
+        close_button = Button(the_frame_level_2, text="Terminer", command= lambda : close_win_export_calculator(the_frame_level_2,new_echant,possible_max_number_of_line,list_all_cycle_puissance))
+
+        #label_max_data.grid(row = 1, column = 2, padx = 30, pady =10)
+        #label_nb_data.grid(row = 2, column = 2, padx = 30, pady =10)
+        #label_entry.grid(row = 3, column = 2, padx = 30, pady =10)
+        #manual_entry.grid(row = 4, column = 2, padx = 30, pady =10)
+        #close_button.grid(row = 0, column = 2)
+        #label_max_data.place(x=data_taille["windows_length"]/2 + 30, y=data_taille["windows_width"]/2 +30)
+
+        label_max_data.place(x=data_taille["windows_width"]/2 + 50, y=0)
+        label_nb_data.place(x=data_taille["windows_width"]/2 + 50, y=15)
+        if nb_line >= (1048567-8):
+            get_factor_and_new_ech(manual_entry,max_number_of_line,possible_max_number_of_line,new_echant,nb_line,1)
+            warning_label_1 = Label(the_frame_level_2, text="Attention! Le nombre maximale de données est dépassé.",fg="red")
+            warning_label_2 = Label(the_frame_level_2, text="Les nombres de lignes et durées ont été recalculés.",fg="red")
+
+            warning_label_1.place(x=data_taille["windows_width"]/2 + 50, y=35)
+            warning_label_2.place(x=data_taille["windows_width"]/2 + 50, y=50)
+            label_entry.place(x=data_taille["windows_width"]/2 + 50, y=70)
+            manual_entry.place(x=data_taille["windows_width"]/2 + 50, y=100)
+            nb_line_max_label.place(x=data_taille["windows_width"]/2 + 50, y=120)
+            max_number_of_line.place(x=data_taille["windows_width"]/2 + 50, y=150)
+            calculate_button.place(x=data_taille["windows_width"]/2 + 250, y=150)
+            add_line.place(x=data_taille["windows_width"]/2 + 50, y=180)
+            nb_line_max_reel.place(x=data_taille["windows_width"]/2 + 50, y=210)
+            possible_max_number_of_line.place(x=data_taille["windows_width"]/2 + 50, y=240)
+            new_ech_label.place(x=data_taille["windows_width"]/2 + 50, y=270)
+            new_echant.place(x=data_taille["windows_width"]/2 + 50, y=300)
+            close_button.place(x=data_taille["windows_width"]/2 + 50, y=330)
+        else:
+            label_entry.place(x=data_taille["windows_width"]/2 + 50, y=60)
+            manual_entry.place(x=data_taille["windows_width"]/2 + 50, y=90)
+            nb_line_max_label.place(x=data_taille["windows_width"]/2 + 50, y=120)
+            max_number_of_line.place(x=data_taille["windows_width"]/2 + 50, y=150)
+            calculate_button.place(x=data_taille["windows_width"]/2 + 250, y=150)
+            add_line.place(x=data_taille["windows_width"]/2 + 50, y=180)
+            nb_line_max_reel.place(x=data_taille["windows_width"]/2 + 50, y=210)
+            possible_max_number_of_line.place(x=data_taille["windows_width"]/2 + 50, y=240)
+            new_ech_label.place(x=data_taille["windows_width"]/2 + 50, y=270)
+            new_echant.place(x=data_taille["windows_width"]/2 + 50, y=300)
+            close_button.place(x=data_taille["windows_width"]/2 + 50, y=330)
 
 
 
+    def get_average(list_data):
+        return sum(list_data)/len(list_data)
 
+    def select_report_info(name_project, type_machine, win):
+
+        with open(dico_all_path["path_to_json_traitement"], "r") as f:
+            data = json.load(f)
+        
+        data["project_name"] = name_project.get()
+        data["type_machine"] = type_machine.get()
+        win.destroy()
+
+        with open(dico_all_path["path_to_json_traitement"], 'w') as file:
+            json.dump(data, file, indent = 6)
+        
+        all_png = glob.glob(data["all_paths"]["Path_to_machine_folder"] + "\\rapports\\images\\*")
+        for file in all_png:
+            os.remove(file)
+
+
+        print(dico_headers)
+        list_x_values_cycle_puissance = dico_x_axis_plots["x_val"]
+        list_y_values_cycle_puissance = dico_y_axis_plot_cycle_puissance["y_val"]
+        print(dico_x_axis_plots_deleted)
+        if dico_x_axis_plots_deleted != {}:
+            list_x_values_cycle_puissance = dico_x_axis_plots_deleted["x_val_new"]
+            list_y_values_cycle_puissance = dico_y_axis_plots_deleted["y_val_new"]
+
+        moy = get_average(list_y_values_cycle_puissance)
+        print("moyenne cycle :",moy)
+        
+        get_max_index = max(range(len(list_y_values_cycle_puissance)),key=list_y_values_cycle_puissance.__getitem__)
+
+    
+
+        list_val_moy= []
+        list_val_moy_sous_cycle= []
+        for i in range(len(list_x_values_cycle_puissance)):
+            list_val_moy.append(1)
+            list_val_moy_sous_cycle.append(1)
+
+        moy_values = array(list_val_moy)*moy
+        dico_line_cycle_puissance["line_moy"] = dico_plot_cycle_puissance["plot0"].plot(list_x_values_cycle_puissance, moy_values, label="moyenne : %s"%(round(moy,3)))
+        dico_line_cycle_puissance["line_max"] = dico_plot_cycle_puissance["plot0"].plot([list_x_values_cycle_puissance[get_max_index]], [list_y_values_cycle_puissance[get_max_index]], color = "red", marker=".", markersize=10, label="max : %s"%(round(list_y_values_cycle_puissance[get_max_index],3)))
+        y_axis_data_length = list_y_values_cycle_puissance[len(list_y_values_cycle_puissance)-1]-list_y_values_cycle_puissance[0]
+        print(y_axis_data_length)
+        #dico_plot_cycle_puissance["plot0"].text(0,moy,round(moy))
+        dico_plot_cycle_puissance["plot0"].legend(loc="upper right")
+
+
+
+        dico_fig_cycle_puissance["fig0"].savefig(data["all_paths"]["Path_to_machine_folder"] + "\\rapports\\images\\" + dico_headers["cycle"][1] + ".png", dpi=300, bbox_inches='tight', pad_inches=0)
+        
+
+        list_sous_cycle = dico_headers["sous_cycles"][1:len(dico_headers["sous_cycles"])]
+        count = 1
+        list_all_moy = []
+        for sous_cycle in list_sous_cycle:
+            list_x_values_sous_cycle = dico_x_axis_plots["x_val"]
+            list_y_values_sous_cycle = dico_all_y_axis_plot_sous_cycle_puissance["y_val_%s"%(count)]
+            if dico_all_y_axis_plot_sous_cycle_puissance_deleted != {}:
+                list_x_values_sous_cycle = dico_x_axis_plots_deleted["x_val_new"]
+                list_y_values_sous_cycle = dico_all_y_axis_plot_sous_cycle_puissance_deleted["y_val_new%s"%(count)]
+            print(list_y_values_sous_cycle)
+            
+            moy_sous_cycle = get_average(list_y_values_sous_cycle)
+            list_all_moy.append(moy_sous_cycle)
+
+            get_max_index_sous_cycle = max(range(len(list_y_values_sous_cycle)),key=list_y_values_sous_cycle.__getitem__)
+
+            moy_values_sous_cycle = array(list_val_moy)*moy_sous_cycle
+
+            
+            dico_line_sous_cycle_puissance["line_moy%s"%(count)] = dico_all_plots_sous_cycle_puissance["plot%s"%(count)].plot(list_x_values_sous_cycle, moy_values_sous_cycle, label="moyenne : %s"%(round(moy_sous_cycle,3)))
+            dico_line_sous_cycle_puissance["line_dot%s"%(count)] = dico_all_plots_sous_cycle_puissance["plot%s"%(count)].plot([list_x_values_sous_cycle[get_max_index_sous_cycle]], [list_y_values_sous_cycle[get_max_index_sous_cycle]], color = "red", marker=".", markersize=10, label="max : %s"%(round(list_y_values_sous_cycle[get_max_index_sous_cycle],3)))
+            dico_all_plots_sous_cycle_puissance["plot%s"%(count)].legend(loc="upper right")
+            
+            dico_all_figs_sous_cycle_puissance["fig%s"%(count)].savefig(data["all_paths"]["Path_to_machine_folder"] + "\\rapports\\images\\" + sous_cycle + ".png", dpi=300, bbox_inches='tight', pad_inches=0)
+
+            l1 = dico_line_sous_cycle_puissance["line_moy%s"%(count)].pop(0)
+            l1.remove()
+            l2 = dico_line_sous_cycle_puissance["line_dot%s"%(count)].pop(0)
+            l2.remove()
+            
+            count+=1
+        
+        print("moyenne des sous cycles : ",list_all_moy)
+
+
+        plots_per_page = pdf_report.construct(data["all_paths"]["Path_to_machine_folder"] + "\\rapports\\images", nb_graph_by_page)
+
+        pdf = pdf_report.PDF()
+
+        date_acquis = data["Date(s)"][0]
+        dic_time_acquis = {"t1":0,"t2":0}
+        for i in range(2):
+            date_time = data["duree acquisiiton"][i].split("_")
+            year = int(date_time[0].split("-")[2])
+            month = int(date_time[0].split("-")[0])
+            day = int(date_time[0].split("-")[1])
+            hour = int(date_time[1].split(".")[0])
+            min = int(date_time[1].split(".")[1])
+            sec = int(date_time[1].split(".")[2])
+            dic_time_acquis["t%s"%(i+1)] = datetime.datetime(year, month, day, hour, min, sec)
+
+        dif = dic_time_acquis["t2"] - dic_time_acquis["t1"]        
+
+        if "days" in str(dif).split(":")[0]:
+            only_days = str(dif).split(":")[0].split(" days")
+            time_acquisition = "%s jours, %s heures, %s minutes, %s secondes"%(only_days[0], only_days[1][2:len(only_days[1])], str(dif).split(":")[1], str(dif).split(":")[2])
+        else:
+            time_acquisition = "%s heures, %s minutes, %s secondes"%(str(dif).split(":")[0], str(dif).split(":")[1], str(dif).split(":")[2])
+        if len(date_acquis) == 2:
+            date_acquis = "Du %s au %s"%(data["Date(s)"][0],data["Date(s)"][1])
+        
+
+        
+
+        pdf.add_page()
+        pdf.text(10, 25, "Projet : ")
+        pdf.text(60,25, data["project_name"])
+        pdf.text(10,35,"Type de véhicule : ")
+        pdf.text(60,35, data["type_machine"])
+        pdf.text(10,45,"Date : ")
+        pdf.text(60,45, date_acquis)
+        pdf.text(10,55,"Durée de l'acquisition : ")
+        pdf.text(60,55, time_acquisition)
+        print("Création du pdf en cours : ","0 %")
+        pdf.image(data["all_paths"]["Path_to_machine_folder"] + "\\rapports\\images\\cycle_puissance.png", 15, 75, 210 - 30)
+        count = 1
+        #plot_only_sous_cycle = []
+        #for sous_list in plots_per_page:
+        #    for elem in sous_list:
+        #        if "cycle_puissance.png" not in elem:
+        #            print(elem)
+        #            print("yep")
+        #            plot_only_sous_cycle.append(elem)
+#
+        #print(plot_only_sous_cycle)
+        for elem in plots_per_page:
+            print("Création du pdf en cours : ", "%s"%((count)/(len(dico_headers["sous_cycles"]))*100) +" % ")
+            pdf.print_page(elem)
+            count+=1*nb_graph_by_page
+        print("Création du pdf en cours : 100 %")
+
+        files = [('pdf', '*.pdf')]
+        file = fd.asksaveasfile(title= "Création du rapport",initialfile = "Rapport de consommation",initialdir=data["all_paths"]["Path_to_machine_folder"] + "\\rapports",filetypes = files, defaultextension = files)
+        list_str = file.name.split("/")
+        only_name = list_str[len(list_str)-1]
+
+        print(file.name)
+        print(type(file.name))
+        print(str(file.name))
+        print(str(only_name))
+
+        pdf.output(file.name, 'F')
+        print("Enregistrement du rapport de consommation effectués dans : ","rapports\\%s"%(only_name))
+
+
+    def print_rapport_to_pdf():
+
+        with open(dico_all_path["path_to_json_traitement"], "r") as f:
+            data = json.load(f)
+
+        the_frame_part_2 = Toplevel(the_frame)    
+        the_frame_part_2.minsize(500, 500)
+        project = Label(the_frame_part_2,text='entrer le nom du projet : ',fg="white",bg="blue") #Select title
+        ent_project = Entry(the_frame_part_2, width=20)
+        if data["project_name"] != None:
+            ent_project.insert(0,data["project_name"])
+        machine = Label(the_frame_part_2,text='entrer le type de machine : ',fg="white",bg="blue") #Select title
+        ent_machine = Entry(the_frame_part_2, width=20)
+        if data["type_machine"] != None:
+            ent_machine.insert(0,data["type_machine"])
+        button = Button(the_frame_part_2, text="terminer", command=lambda : select_report_info(ent_project, ent_machine, the_frame_part_2))
+
+        project.grid(row = 0, column = 0, padx = 30, pady =10)
+        ent_project.grid(row = 0, column = 1, padx = 30,pady =10)
+        machine.grid(row = 1, column = 0, padx = 30, pady =10) 
+        ent_machine.grid(row = 1, column = 1, padx = 30, pady =10)
+        button.grid(row = 2, column = 2, padx = 30, pady =10)
+        
+        
 
     def end_script():
         exit()
@@ -1494,6 +1892,8 @@ def interface_part_3(json_name_file, json_name_file_part_2):
 # Si le fichier initial doit être utilisé, l'indice est "init" si le fichier de données supprimés, "delete"
     data["all_paths"]["path_to_suppressed_cycle_file"] = "init"
     data["all_paths"]["path_to_suppressed_sous_cycle_file"] = "init"
+    data["project_name"] = None
+    data["type_machine"] = None
 
     with open(dico_all_path["path_to_json_traitement"], 'w') as file:
             json.dump(data, file, indent = 6)
@@ -1557,6 +1957,8 @@ def interface_part_3(json_name_file, json_name_file_part_2):
     filemenu3.add_command(label="Les graphiques des données de puissance (brut)", command=plot_graph_sous_cycle)
     filemenu3.add_separator()
     filemenu3.add_command(label="Exporter vers calculateur", command=export_data_for_calculator)
+    filemenu3.add_separator()
+    filemenu3.add_command(label="Générer le rapport", command=print_rapport_to_pdf)
 
     
     #filemenu3.add_separator()
@@ -1577,6 +1979,35 @@ def interface_part_3(json_name_file, json_name_file_part_2):
     par_def.place(x=1350,y=470)
     par_def = Button(the_frame, text="position souris", command=get_coord)
     par_def.place(x=1350,y=500)
+    
+    label_index = Label(the_frame,text="index :                Aucun")
+    label_y_mouse = Label(the_frame,text="position en y :   Aucune")
+    label_temps = Label(the_frame,text="temps :               Aucun")
+    label_puissance = Label(the_frame,text="puissance :        Aucune")
+    label_Image_1 = Label(the_frame,text="image 1 :            Aucune")
+    label_Image_2 = Label(the_frame,text="image 2 :            Aucune")
+    label_gps = Label(the_frame,text="GPS :                   Aucun")
+
+    dico_label_info_mouse_position["index"] = label_index
+    dico_label_info_mouse_position["position en y"] = label_y_mouse
+    dico_label_info_mouse_position["Temps"] = label_temps
+    dico_label_info_mouse_position["puissance"] = label_puissance
+    dico_label_info_mouse_position["Image 1"] = label_Image_1
+    dico_label_info_mouse_position["Image 2"] = label_Image_2
+    dico_label_info_mouse_position["GPS"] = label_gps
+
+    first = 170
+    step = 20
+
+    dico_label_info_mouse_position["index"].place(x=1050,y=first)
+    dico_label_info_mouse_position["position en y"].place(x=1050,y=first+step*1)
+    dico_label_info_mouse_position["Temps"].place(x=1050,y=first+step*2)
+    dico_label_info_mouse_position["puissance"].place(x=1050,y=first+step*3)
+    dico_label_info_mouse_position["Image 1"].place(x=1050,y=first+step*4)
+    dico_label_info_mouse_position["Image 2"].place(x=1050,y=first+step*5)
+    dico_label_info_mouse_position["GPS"].place(x=1050,y=first+step*6)
+
+
 
     #validate_button = Button(the_frame, text="Valider", command= lambda : convert_all_data(namefile[1]))
     #validate_button.place(x=1200,y=20)

@@ -4,9 +4,9 @@
       "config_x_place_sc": [
             40,
             120,
-            250,
-            380,
-            900
+            400,
+            530,
+            1050
       ],
       "sous_cycle 1": {
             "sous_cycles_descriptions_1": "Torque x RPM (puissance)",

@@ -1,13 +1,13 @@
 {
-      "config_nb_func": 1,
-      "config_y_place_func": 390,
+      "config_nb_func": 3,
+      "config_y_place_func": 630,
       "config_x_place_func": [
             40,
             120,
             250,
             380
       ],
-      "config_y_place_sens": 390,
+      "config_y_place_sens": 630,
       "config_x_place_sens": [
             120,
             200,
@@ -124,6 +124,56 @@
                   "can_data": "0b0",
                   "range_type": "digital",
                   "value_of_100": "20"
+            }
+      },
+      "function 2": {
+            "funcs_description_2": "cruh",
+            "config_nb_sens": 2,
+            "sensor 10": {
+                  "num_capt": "func: 2. Capt: 10",
+                  "capts_description": "sdfsd",
+                  "type_channel": "Digital",
+                  "can_adress": "0x180600fd",
+                  "can_data": "1b2",
+                  "range_type": "digital",
+                  "value_of_100": "23"
+            },
+            "sensor 12": {
+                  "num_capt": "func: 2. Capt: 12",
+                  "capts_description": "sdfsad",
+                  "type_channel": "Digital",
+                  "can_adress": "0x180600fd",
+                  "can_data": "2b3",
+                  "range_type": "digital",
+                  "value_of_100": "324"
+            }
+      },
+      "function 3": {
+            "funcs_description_3": "bitch",
+            "config_nb_sens": 2,
+            "sensor 11": {
+                  "num_capt": "func: 3. Capt: 11",
+                  "capts_description": "sdagfdsaf",
+                  "type_channel": "Analogique",
+                  "can_adress": "0x180600fd",
+                  "can_data": [
+                        "0",
+                        "4"
+                  ],
+                  "range_type": "0 a 100%",
+                  "value_of_100": "23"
+            },
+            "sensor 13": {
+                  "num_capt": "func: 3. Capt: 13",
+                  "capts_description": "sadfsdf",
+                  "type_channel": "Analogique",
+                  "can_adress": "0x180600fd",
+                  "can_data": [
+                        "5",
+                        "7"
+                  ],
+                  "range_type": "-100 a 100%",
+                  "value_of_100": "43"
             }
       }
 }

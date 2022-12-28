@@ -44,6 +44,11 @@ dico_value_of_100 = {}
 #dico_math_checkbutton = {}
 #dico_math_label = {}
 #dico_math_equation = {}
+list_assertion = []
+error_for_rpi = []
+error_import_can = []
+invalide_entry = []
+dico_all_error_message = {"assertions_partie_1":list_assertion,"for_rpi":error_for_rpi, "import_can":error_import_can, "invalide_entry":invalide_entry}
 dico_scrollbar = {}
 
 dico_file_name = {"filename":None, "path_to_file":None, "taille_interface_file":None, "path_to_folder":None, "path_to_parent_folder":None, "Path_to_machine_folder":None,"Path_to_interface_folder":None}
@@ -150,8 +155,12 @@ def create_tkinter_widjet():
 
 def add_machine():
 
+    get_all_entry()
+
+    print("oui")
     file = fd.askdirectory(title= "Sélectionner le dossier de la nouvelle machine ", initialdir=dico_file_name["Path_to_interface_folder"])
     print(file)
+    
     #list_str = file.name.split("/")
     #only_name = list_str[len(list_str)-1]
     #only_parent_path = list_str[0:len(list_str)-1]
@@ -165,23 +174,27 @@ def add_machine():
     #path_to_file = file.name
     #path_to_dir = "\\".join(only_parent_path) + "\\" + only_name_withaout_extention[0]
 
-    os.mkdir(file + "\\1) setup_donnees")
-    os.mkdir(file + "\\1) setup_donnees\\doc")
-    os.mkdir(file + "\\1) setup_donnees\\fichiers_enregistrements")
+    if file != "":
+        os.mkdir(file + "\\1) setup_donnees")
+        os.mkdir(file + "\\1) setup_donnees\\doc")
+        os.mkdir(file + "\\1) setup_donnees\\fichiers_enregistrements")
 
-    os.mkdir(file + "\\2) calcul_puissance")
-    os.mkdir(file + "\\2) calcul_puissance\\doc")
-    os.mkdir(file + "\\2) calcul_puissance\\fichiers_enregistrements")
+        os.mkdir(file + "\\2) calcul_puissance")
+        os.mkdir(file + "\\2) calcul_puissance\\doc")
+        os.mkdir(file + "\\2) calcul_puissance\\fichiers_enregistrements")
 
-    os.mkdir(file + "\\3) traitement_donnes")
-    os.mkdir(file + "\\3) traitement_donnes\\doc")
-    os.mkdir(file + "\\3) traitement_donnes\\fichiers_enregistrements")
+        os.mkdir(file + "\\3) traitement_donnes")
+        os.mkdir(file + "\\3) traitement_donnes\\doc")
+        os.mkdir(file + "\\3) traitement_donnes\\fichiers_enregistrements")
 
-    os.mkdir(file + "\\donnees_recoltees_machine")
-    os.mkdir(file + "\\fichier_pour_calculateur")
-    os.mkdir(file + "\\fichier_pour_la_rpi")
-    os.mkdir(file + "\\rapports")
-    os.mkdir(file + "\\rapports\\images")
+        os.mkdir(file + "\\donnees_recoltees_machine")
+        os.mkdir(file + "\\fichier_pour_calculateur")
+        os.mkdir(file + "\\fichier_pour_la_rpi")
+        os.mkdir(file + "\\rapports")
+        os.mkdir(file + "\\rapports\\images")
+
+    else:
+        print("action annulée")
 
 
 def add_function():
@@ -502,10 +515,108 @@ def get_all_capt():
 #            json.dump(data, file, indent = 6)
 #
 #    create_tkinter_widjet()
+
+def delete_widgets(win,fonc, choice):
+
+    get_sens = get_all_capt()
+
+    with open(dico_file_name["path_to_file"], "r") as f:
+        data = json.load(f)
+
+    for fonc_and_capt in get_sens:
+        only_num_capt = fonc_and_capt[1].split(' ')
+        only_num_fonc = fonc_and_capt[0].split(' ')
+        try:
+            dico_funcs["Fonction %s"%(only_num_fonc[1])].destroy()
+            dico_funcs_add_description["funcs_description_%s"%(only_num_fonc[1])].destroy()
+            dico_button_add_capts["button_fct_%s"%(only_num_fonc[1])].destroy()
+            dico_button_delete_funcs["button_del_fct_%s"%(only_num_fonc[1])].destroy()
+            dico_all_sensors["func_%s"%(only_num_fonc[1])]["type_channel_sens_%s"%(only_num_capt[1])].destroy()
+            #dico_all_sensors["func_%s"%(only_num_fonc[1])]["number_channel_sens_%s"%(only_num_capt[1])].destroy()
+            dico_all_sensors["func_%s"%(only_num_fonc[1])]["Capteur %s"%(only_num_capt[1])].destroy()
+            dico_capts_add_description["capts_description_%s"%(only_num_capt[1])].destroy()
+            dico_can_adresse["adress_%s"%(only_num_capt[1])].destroy()
+            if data[fonc_and_capt[0]][fonc_and_capt[1]]["type_channel"] == "Analogique":
+                dico_nb_bit_by_bytes_analogique_menu_1["can_data_%s"%(only_num_capt[1])].destroy()
+                dico_separator["sep_%s"%(only_num_capt[1])].destroy()
+                dico_nb_bit_by_bytes_analogique_menu_2["can_data_%s"%(only_num_capt[1])].destroy()
+                dico_analogique_type_range["type_range_%s"%(only_num_capt[1])].destroy()
+            elif data[fonc_and_capt[0]][fonc_and_capt[1]]["type_channel"] == "Digital":
+                dico_byte_from_digital["can_data_%s"%(only_num_capt[1])].destroy()
+                dico_bit_from_digital["can_data_%s"%(only_num_capt[1])].destroy()
+            dico_value_of_100["max_val_%s"%(only_num_capt[1])].destroy()
+            #dico_math_checkbutton["math_chekbutton_for_capt_%s"%(only_num_capt[1])][0].destroy()
+            #dico_math_checkbutton["math_chekbutton_for_capt_%s"%(only_num_capt[1])][1].destroy()
+            #print(dico_math_label)
+            #print(dico_math_label["fonc_%s_capt_%s"%(only_num_fonc[1],only_num_capt[1])])
+            #dico_math_label["fonc_%s_capt_%s"%(only_num_fonc[1],only_num_capt[1])].destroy()
+            #print("15")
+            #dico_math_equation["fonc_%s_capt_%s"%(only_num_fonc[1],only_num_capt[1])].destroy()
+        except KeyError:
+            break
+
+    if choice == "fonc":
+        list_all_func = get_all_function()
+        print(list_all_func)
+        fonc_2 = list_all_func.pop()
+        print(fonc_2)
+        get_num = fonc_2.split(" ")
+
+        data["config_nb_func"] = data["config_nb_func"]-1
+        fonc_deleted = data.pop("function %s"%(get_num[1]),None)
+
+        with open(dico_file_name["path_to_file"], 'w') as file:
+            json.dump(data, file, indent = 6)
+            
+        if fonc_deleted != None:
+            print("La fonction %s a bien été supprimé"%(get_num[1]))
+        else:
+            print("Aucune fonction supprimée")
+        
+        win.destroy()
+
+
+    elif choice == "sens":
+        get_all_capt_by_fonc = []
+        fonc_and_capt = get_all_capt()
+        for one_fonction in fonc_and_capt:
+            get_num_fonc = one_fonction[0].split(" ")
+            get_num_capt = one_fonction[1].split(" ")
+            if get_num_fonc[1] == fonc:
+                get_all_capt_by_fonc.append(one_fonction[1])
+        print(get_all_capt_by_fonc)
+        capt_to_remove = get_all_capt_by_fonc.pop()
+        only_num =capt_to_remove.split(" ") 
+        data["function %s"%(fonc)]["config_nb_sens"] = data["function %s"%(fonc)]["config_nb_sens"]-1
+        capt_deleted = data["function %s"%(fonc)].pop("sensor %s"%(only_num[1]),None)
+
+        with open(dico_file_name["path_to_file"], 'w') as file:
+            json.dump(data, file, indent = 6)
+
+        if capt_deleted != None:
+            print("Le capteur %s de la fonction %s bien été supprimé"%(only_num[1],fonc))
+        else:
+            print("Aucun capteur supprimée")
+    
+    function_from_file()
+
+def destroy_win(win):
+    win.destroy()
+
+def delete_option_window(num_fonc):
+
+    the_frame_level_2 = Toplevel(the_frame, padx=125, pady=130)    
+    
+    button = Button(the_frame_level_2, text="La dernière fonction", command=lambda : delete_widgets(the_frame_level_2,num_fonc,"fonc"))
+    button2 = Button(the_frame_level_2, text="Supprimer le dernier capteur de la fonction %s"%(num_fonc), command=lambda : delete_widgets(the_frame_level_2,num_fonc,"sens"))
+    button3 = Button(the_frame_level_2,text="Terminer", command=lambda : destroy_win(the_frame_level_2))
+    button.grid(row = 1, column = 2, padx = 30, pady =10)
+    button2.grid(row = 2, column = 2, padx = 30, pady =10)
+    button3.grid(row=1, column=3, padx = 30, pady =10)
 #
 def delete_functions(num_func):
     print("la fonction %s sera supprimée"%(num_func))
-
+    
     dico_funcs["Fonction %s"%(num_func)].destroy()
     dico_button_add_capts["button_fct_%s"%(num_func)].destroy()
     dico_button_delete_funcs["button_del_fct_%s"%(num_func)].destroy()
@@ -623,9 +734,9 @@ def delete_functions(num_func):
         dico_funcs["Fonction %s"%(count)].configure(text = "Fonction %s"%(count))
 
         dico_button_add_capts["button_fct_%s"%(count)] = dic_button_add_capts
-        dico_button_add_capts["button_fct_%s"%(count)].configure(text="Ajouter un capt (%s)"%(count), command= lambda : add_sensors(count-1))
+        dico_button_add_capts["button_fct_%s"%(count)].configure(text="Ajouter un capteur", command= lambda : add_sensors(count-1))
         dico_button_delete_funcs["button_del_fct_%s"%(count)] = dic_button_delete_funcs
-        dico_button_delete_funcs["button_del_fct_%s"%(count)].configure(text="Supprimer la fonct (%s)"%(count), command= lambda : delete_functions(count-1))
+        dico_button_delete_funcs["button_del_fct_%s"%(count)].configure(text="Supprimer de la fonction", command= lambda : delete_option_window(count-1))
         dico_all_sensors["func_%s"%(count)] = dic_all_sensors
         count += 1
     print("les nouvelles data",list(data.keys()))
@@ -792,8 +903,13 @@ def can_channel_type(val, num_fonc, num_capteur, coming_from=None):
             print(data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"] != None)
 
             if (coming_from == "open") and ((type(data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"]) != list) or (data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"] != None)):
-                assert data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"].find("b") != -1, \
-                    "un capteur digital n'a pas le bon format dans le fichier"
+                try:
+                    assert data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"].find("b") != -1, \
+                        "un capteur digital %s n'a pas le bon format dans le fichier. Il devrait être du format xbx mais il est de %s"%(nb_capteur[1], data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"])
+                except AssertionError:
+                    list_assertion.append("un capteur digital %s n'a pas le bon format dans le fichier. Il devrait être du format xbx mais il est de %s"%(nb_capteur[1], data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"]))
+                    dico_all_error_message["assertions_partie_1"] = list_assertion
+
                 digital_values = data["function %s"%(num_fonc)]["sensor %s"%(nb_capteur[1])]["can_data"].split("b")
                 digital_byte_of_message.set(digital_values[0])
                 digital_bit_from_byte.set(digital_values[1])
@@ -819,10 +935,12 @@ def nb_bytes_for_message_1(val, fonc, nb_sens):
 
     with open(dico_file_name["path_to_file"], 'r') as f:
         data = json.load(f)
-    
-    assert data["function %s"%(fonc)]["sensor %s"%(nb_sens)]["type_channel"] == "Analogique", \
-        "le capteutr est digital mais devrait être analogique"
-
+    try:
+        assert data["function %s"%(fonc)]["sensor %s"%(nb_sens)]["type_channel"] == "Analogique", \
+            "le capteur %s est digital, mais devrait être analogique"%(nb_sens)
+    except AssertionError:
+        list_assertion.append("le capteur %s est digital, mais devrait être analogique"%(nb_sens))
+        dico_all_error_message["assertions_partie_1"] = list_assertion
     if data["function %s"%(fonc)]["sensor %s"%(nb_sens)]["can_data"] == None:
         data["function %s"%(fonc)]["sensor %s"%(nb_sens)]["can_data"] = (first_byte_of_message,None)
     
@@ -841,8 +959,12 @@ def nb_bytes_for_message_2(val, fonc, nb_sens):
     with open(dico_file_name["path_to_file"], 'r') as f:
         data = json.load(f)
 
-    assert data["function %s"%(fonc)]["sensor %s"%(nb_sens)]["type_channel"] == "Analogique", \
-        "le capteutr est digital mais devrait être analogique"
+    try:
+        assert data["function %s"%(fonc)]["sensor %s"%(nb_sens)]["type_channel"] == "Analogique", \
+            "le capteur %s est digital, mais devrait être analogique"%(nb_sens)
+    except AssertionError:
+        list_assertion.append("le capteur %s est digital, mais devrait être analogique"%(nb_sens))
+        dico_all_error_message["assertions_partie_1"] = list_assertion
 
     if data["function %s"%(fonc)]["sensor %s"%(nb_sens)]["can_data"] == None:
         data["function %s"%(fonc)]["sensor %s"%(nb_sens)]["can_data"] = (None,last_byte_of_message)
@@ -862,8 +984,12 @@ def type_of_range_analogique(val, fonc, nb_sens):
     with open(dico_file_name["path_to_file"], 'r') as f:
         data = json.load(f)
 
-    assert data["function %s"%(fonc)]["sensor %s"%(nb_sens)]["type_channel"] == "Analogique", \
-        "le capteutr est digital mais devrait être analogique"
+    try:
+        assert data["function %s"%(fonc)]["sensor %s"%(nb_sens)]["type_channel"] == "Analogique", \
+            "le capteur %s est digital, mais devrait être analogique"%(nb_sens)
+    except AssertionError:
+        list_assertion.append("le capteur %s est digital, mais devrait être analogique"%(nb_sens))
+        dico_all_error_message["assertions_partie_1"] = list_assertion
 
     data["function %s"%(fonc)]["sensor %s"%(nb_sens)]["range_type"] = type_of_range
 
@@ -879,8 +1005,12 @@ def bit_from_message_digital(val, fonc, nb_sens):
     with open(dico_file_name["path_to_file"], 'r') as f:
         data = json.load(f)
 
-    assert data["function %s"%(fonc)]["sensor %s"%(nb_sens)]["type_channel"] == "Digital", \
-        "le capteur est analogique, mais devrait être digital"
+    try:
+        assert data["function %s"%(fonc)]["sensor %s"%(nb_sens)]["type_channel"] == "Digital", \
+            "le capteur %s est analogique, mais devrait être digital"%(nb_sens)
+    except AssertionError:
+        list_assertion.append("le capteur %s est analogique, mais devrait être digital"%(nb_sens))
+        dico_all_error_message["assertions_partie_1"] = list_assertion
 
     val_digital_bit = data["function %s"%(fonc)]["sensor %s"%(nb_sens)]["can_data"]
     if (type(val_digital_bit) == list) or (val_digital_bit == None):
@@ -912,8 +1042,12 @@ def byte_message_digital(val, fonc, nb_sens):
     with open(dico_file_name["path_to_file"], 'r') as f:
         data = json.load(f)
 
-    assert data["function %s"%(fonc)]["sensor %s"%(nb_sens)]["type_channel"] == "Digital", \
-        "le capteur est analogique, mais devrait être digital"
+    try:
+        assert data["function %s"%(fonc)]["sensor %s"%(nb_sens)]["type_channel"] == "Digital", \
+            "le capteur %s est analogique, mais devrait être digital"%(nb_sens)
+    except AssertionError:
+        list_assertion.append("le capteur %s est analogique, mais devrait être digital"%(nb_sens))
+        dico_all_error_message["assertions_partie_1"] = list_assertion
 
     
     val_digital_byte = data["function %s"%(fonc)]["sensor %s"%(nb_sens)]["can_data"]
@@ -977,8 +1111,13 @@ def function_from_file():
         #print('all fonctions : fonction ',number)
         create_functions(number[1],"open")
 
-    assert len(get_fonc) == data["config_nb_func"], \
-        "Le nombre de fonction dans le fichier et détecté ne coresspond pas"
+    try:
+        assert len(get_fonc) == data["config_nb_func"], \
+            "Les nombres de fonction enregistré dans le fichier et détecté ne correspondent pas"
+    except AssertionError:
+        list_assertion.append("Les nombres de fonction enregistré dans le fichier et détecté ne correspondent pas")
+        dico_all_error_message["assertions_partie_1"] = list_assertion
+
         
     for fct_and_capt in get_sens:
         number_fct = fct_and_capt[0].split(' ')
@@ -1026,12 +1165,12 @@ def create_functions(num_fct, coming_from):
         dico_funcs_add_description["funcs_description_%s"%(num_fct)].place(x=data["config_x_place_func"][1],y=data["config_y_place_func"])
 
 
-        button_add_sensors = Button(the_frame, text="Ajouter un capt (1)", command= lambda : add_sensors(num_fct,"new"))
+        button_add_sensors = Button(the_frame, text="Ajouter un capteur", command= lambda : add_sensors(num_fct,"new"))
         dico_button_add_capts["button_fct_%s"%(num_fct)] = button_add_sensors
         #print(dico_button_add_capts)
         dico_button_add_capts["button_fct_%s"%(num_fct)].place(x=data["config_x_place_func"][2],y=data["config_y_place_func"])
         #print("save_button : ", dico_button_add_capts["button_fct_%s"%(num_fct)])
-        button_delete_function = Button(the_frame, text="Supprimer la fonc (1)", command= lambda : delete_functions(num_fct))
+        button_delete_function = Button(the_frame, text="Supprimer de la fonction", command= lambda : delete_option_window(num_fct))
         dico_button_delete_funcs["button_del_fct_%s"%(num_fct)] = button_delete_function
         #print(dico_button_delete_funcs)
         dico_button_delete_funcs["button_del_fct_%s"%(num_fct)].place(x = data["config_x_place_func"][3] , y = data["config_y_place_func"])
@@ -1062,12 +1201,12 @@ def create_functions(num_fct, coming_from):
         dico_funcs_add_description["funcs_description_%s"%(num_fct)] = funcs_add_description
         dico_funcs_add_description["funcs_description_%s"%(num_fct)].place(x=data["config_x_place_func"][1],y=data["config_y_place_func"])
 
-        button_add_sensors = Button(the_frame, text="Ajouter un capt (1)", command= lambda : add_sensors(num_fct,'new'))
+        button_add_sensors = Button(the_frame, text="Ajouter un capteur", command= lambda : add_sensors(num_fct,'new'))
         dico_button_add_capts["button_fct_%s"%(num_fct)] = button_add_sensors
         #print(dico_button_add_capts)
         dico_button_add_capts["button_fct_%s"%(num_fct)].place(x=data["config_x_place_func"][2],y=data["config_y_place_func"])
         #print("save_button : ", dico_button_add_capts["button_fct_%s"%(num_fct)])
-        button_delete_function = Button(the_frame, text="Supprimer la fonc (1)", command= lambda : delete_functions(num_fct))
+        button_delete_function = Button(the_frame, text="Supprimer de la fonction", command= lambda : delete_option_window(num_fct))
         dico_button_delete_funcs["button_del_fct_%s"%(num_fct)] = button_delete_function
         #print(dico_button_delete_funcs)
         dico_button_delete_funcs["button_del_fct_%s"%(num_fct)].place(x = data["config_x_place_func"][3] , y = data["config_y_place_func"])
@@ -1075,6 +1214,19 @@ def create_functions(num_fct, coming_from):
 
 def select_file():
     print("arriver dans select file")
+
+    filetypes = (('text files', '*.json'),('All files', '*.*'))
+    print(dico_file_name["path_to_file"])
+    filename = fd.askopenfilename(title="Sélectionner l'interface à ouvrir",initialdir=dico_file_name["path_to_folder"],filetypes=filetypes)
+    print(type(filename))
+    list_str = filename.split("/")
+    only_name = list_str[len(list_str)-1]
+    
+    if filename != "":
+        pass
+    else:
+        print("action annulée")
+        return None
 
     today = datetime.datetime.now()
     today_format = today.strftime("%b_%d_%Y")
@@ -1084,6 +1236,7 @@ def select_file():
     if name_default == dico_file_name["filename"]:
         default_file = dico_file_name["path_to_file"]
 
+    get_all_entry()
     get_sens = get_all_capt()
 
     with open(dico_file_name["path_to_file"], "r") as f:
@@ -1139,19 +1292,14 @@ def select_file():
     #dico_math_equation.clear()
     dico_scrollbar.clear()
 
-    filetypes = (('text files', '*.json'),('All files', '*.*'))
-    print(dico_file_name["path_to_file"])
-    filename = fd.askopenfilename(title="Sélectionner l'interface à ouvrir",initialdir=dico_file_name["path_to_folder"],filetypes=filetypes)
-    list_str = filename.split("/")
-    only_name = list_str[len(list_str)-1]
     dico_file_name["filename"] = only_name
     dico_file_name["path_to_file"] = filename
 
     if default_file != None:
         os.remove(default_file)
+    
 
     function_from_file()
-
 
     #showinfo(title='Selected File',message=filename)
 
@@ -1169,20 +1317,23 @@ def save_in_to_file():
     
     files = [('json', '*.json')]
     file = fd.asksaveasfile(title = "Sauvegarder l'interface graphique", initialfile = dico_file_name["filename"],initialdir=dico_file_name["path_to_folder"],filetypes = files, defaultextension = files)
-    list_str = file.name.split("/")
-    only_name = list_str[len(list_str)-1]
 
-    with open(dico_file_name["path_to_file"], "r") as f:
-        data = json.load(f)
+    if file != None:
+        print("file",file)
+        list_str = file.name.split("/")
+        only_name = list_str[len(list_str)-1]
+        with open(dico_file_name["path_to_file"], "r") as f:
+            data = json.load(f)
+        dico_file_name["filename"] = only_name
+        dico_file_name["path_to_file"] = file.name
 
-    dico_file_name["filename"] = only_name
-    dico_file_name["path_to_file"] = file.name
+        with open(dico_file_name["path_to_file"], 'w') as file:
+            json.dump(data, file, indent = 6)
 
-    with open(dico_file_name["path_to_file"], 'w') as file:
-        json.dump(data, file, indent = 6)
-
-    if default_file != None:
-        os.remove(default_file)
+        if default_file != None:
+            os.remove(default_file)
+    else:
+        print("action annulée")
 
 def export_data_for_rpi():
 
@@ -1203,12 +1354,19 @@ def export_data_for_rpi():
     for all_capt in get_capts:
         can_ad = data[all_capt[0]][all_capt[1]]["can_adress"]
 
-        assert (can_ad[len(can_ad)-2:len(can_ad)] =="FD") or (can_ad[len(can_ad)-2:len(can_ad)] =="fd") or (can_ad[len(can_ad)-2:len(can_ad)] =="Fd") or (can_ad[len(can_ad)-2:len(can_ad)] =="fD"),\
-            "les adresses doivent se terminer par (FD,fd,Fd ou fD) et non par %s"%(can_ad[len(can_ad)-2:len(can_ad)])
-        assert len(can_ad) == 10,\
-            "Les adresses doivent être composé de 10 caractères et non pas %s, (%s)"%(len(can_ad),"Capteur %s"%())
+        try:
+            assert (can_ad[len(can_ad)-2:len(can_ad)] =="FD") or (can_ad[len(can_ad)-2:len(can_ad)] =="fd") or (can_ad[len(can_ad)-2:len(can_ad)] =="Fd") or (can_ad[len(can_ad)-2:len(can_ad)] =="fD"),\
+                "les adresses doivent se terminer par (FD,fd,Fd ou fD) et non pas : %s, (Capteur %s)"%(can_ad[len(can_ad)-2:len(can_ad)],all_capt[1])
+        except AssertionError:
+            error_for_rpi.append("les adresses doivent se terminer par (FD,fd,Fd ou fD) et non pas : %s, (Capteur %s)"%(can_ad[len(can_ad)-2:len(can_ad)],all_capt[1]))
+            dico_all_error_message["for_rpi"] = error_for_rpi
+        try:
+            assert len(can_ad) == 10,\
+                "Les adresses doivent être composé de 10 caractères et non pas %s, (%s)"%(len(can_ad),"Capteur %s"%(all_capt[1]))
 
-        
+        except AssertionError:
+            error_for_rpi.append("Les adresses doivent être composé de 10 caractères et non pas %s, (%s)"%(len(can_ad),"Capteur %s"%(all_capt[1])))
+            dico_all_error_message["for_rpi"] = error_for_rpi
         
         can_ad = can_ad[0:len(can_ad)-2] + "fd"
 
@@ -1232,19 +1390,34 @@ def export_data_for_rpi():
 
     # Cette boucle sert a aller chercher les 6 digits de chacune des adresses et de les enregistrer dans une list (only_digit_of_adress_list) 
     all_keys = dico.keys()
+    print(dico)
+    print(all_keys)
     only_digit_of_adress_list = []
     for adress in all_keys:
+        ad_complete = adress
         adress = adress[2:len(adress)]
         only_digit_list = ""
         for digit in adress:
             if digit.isdigit():
                 only_digit_list += digit
-
-        assert len(only_digit_list) == 6,\
-            "Les adresses doivent être composé de 6 digits et non pas %s"%(len(only_digit_list))
+        try:
+            assert ad_complete[0:2] == "0x", \
+                "Les adresses doivent commencées par les symboles 0x et non pas %s, (Capteur %s)"%(ad_complete[0:2],list(dico["0x"+adress].keys())[0])
+        except AssertionError:
+            error_for_rpi.append("Les adresses doivent commencées par les symboles 0x et non pas %s, (Capteur %s)"%(ad_complete[0:3],list(dico["0x"+adress].keys())[0]))
+            dico_all_error_message["for_rpi"] = error_for_rpi
+        try:
+            assert len(only_digit_list) == 6,\
+                "Les adresses doivent être composé de 6 digits et non pas %s, (Capteur %s)"%(len(only_digit_list),list(dico["0x"+adress].keys())[0])
+        except AssertionError:
+            error_for_rpi.append("Les adresses doivent être composé de 6 digits et non pas %s, (Capteur %s)"%(len(only_digit_list),list(dico["0x"+adress].keys())[0]))
+            dico_all_error_message["for_rpi"] = error_for_rpi
         only_digit_of_adress_list.append(int(only_digit_list))
 
-
+    if dico_all_error_message["for_rpi"] != []:
+        fenetre_erreur(dico_all_error_message["for_rpi"],"for_rpi")
+        return None
+    
     only_digit_of_adress_list.sort()
     adresse_sorted_complete = []
     for half_adress in only_digit_of_adress_list:
@@ -1298,6 +1471,10 @@ def export_data_for_rpi():
         dico_with_all_can_data = {}
         for i in range(number_of_line_in_csv):
             for j in range(len(list_with_all_adress)):
+                print(i)
+                print(number_of_line_in_csv)
+                print(j)
+                print(list_with_all_adress)
                 dico_with_all_can_data[list_with_all_adress[j]] = dictionnary_of_all_lines_in_csv_file["ligne %s"%(i+1)][j]
 
             writer.writerow(dico_with_all_can_data)
@@ -1419,127 +1596,280 @@ def convert_all_data():
     data_csv = fd.askopenfilename(title='Sélectionner les données CAN',initialdir=dico_file_name["Path_to_machine_folder"] + "\\donnees_recoltees_machine",filetypes=filetypes)
     list_str = data_csv.split("/")
     only_name = list_str[len(list_str)-1]
+
+    if data_csv != "":
     
-    with open(data_csv, newline='') as csvfile:
-        reader = csv.DictReader(csvfile)
-        header = reader.fieldnames
+        with open(data_csv, newline='') as csvfile:
+            reader = csv.DictReader(csvfile)
+            header = reader.fieldnames
 
-    header_without_time = header[1:len(header)]
+        header_without_time = header[1:len(header)]
 
-    my_data = genfromtxt(data_csv, delimiter=',', names=True, usecols=tuple(header_without_time), unpack=True)
+        try:
+            my_data = genfromtxt(data_csv, delimiter=',', names=True, usecols=tuple(header_without_time), unpack=True)
+        except ValueError as e:
+            error_import_can.append("erreur dans le fichier CAN: %s"%(e))
+            dico_all_error_message["import_can"] = error_import_can
+            print(dico_all_error_message["import_can"])
+            fenetre_erreur(dico_all_error_message["import_can"],"import_can")
+            return None
+        associate_with_sensor_list = find_sensors(header_without_time)
+    
 
-    associate_with_sensor_list = find_sensors(header_without_time)
+        with open(dico_file_name["path_to_file"], "r") as f:
+            data = json.load(f)
+            
+        dic = {}
+        all_formul_list = []
+        for i in range(len(header_without_time)):
+            print(i)
+            dic[associate_with_sensor_list[i][4]] = my_data[i]
+            convert_bit_to_value = None
+            if associate_with_sensor_list[i][1][1] == "A":
+                find_bytes = associate_with_sensor_list[i][1][0]
+                nb_bytes = find_bytes.split('-')
+                nb_bytes = (int(nb_bytes[1]) - int(nb_bytes[0]))+1
+                nb_bit = 255**nb_bytes
+                analog_range = data[associate_with_sensor_list[i][2]][associate_with_sensor_list[i][3]]["range_type"]
 
+                if analog_range == "0 a 100%":
+                    max_value = data[associate_with_sensor_list[i][2]][associate_with_sensor_list[i][3]]["value_of_100"]
+                    if max_value.find(',') !=-1:
+                        convert_comma_to_dot = max_value.split(',')
+                        max_value = convert_comma_to_dot[0]+'.'+convert_comma_to_dot[1]
+                    all_formul_list.append("(%s/%s)*%s"%(max_value,nb_bit,list(dic.keys())[i]))
+
+                elif analog_range == "-100 a 100%":
+                    max_value = data[associate_with_sensor_list[i][2]][associate_with_sensor_list[i][3]]["value_of_100"]
+                    if max_value.find(',') !=-1:
+                        convert_comma_to_dot = max_value.split(',')
+                        max_value = convert_comma_to_dot[0]+'.'+convert_comma_to_dot[1]
+                    convert_bit_to_value = "((%s - %s)/%s)*%s"%(list(dic.keys())[i],nb_bit/2,nb_bit/2,max_value)
+                    all_formul_list.append(convert_bit_to_value)
+                elif analog_range == "direct":
+                    max_value = data[associate_with_sensor_list[i][2]][associate_with_sensor_list[i][3]]["value_of_100"]
+                    convert_bit_to_value = list(dic.keys())[i]
+                    all_formul_list.append(convert_bit_to_value)
+
+            elif associate_with_sensor_list[i][1][1] == "D":
+                max_value = data[associate_with_sensor_list[i][2]][associate_with_sensor_list[i][3]]["value_of_100"]
+                if max_value.find(',') !=-1:
+                        convert_comma_to_dot = max_value.split(',')
+                        max_value = convert_comma_to_dot[0]+'.'+convert_comma_to_dot[1]
+                all_formul_list.append("%s*%s"%(max_value,list(dic.keys())[i]))
+
+        list_of_all_array = []
+        nb_line = []
+        for formul in all_formul_list:
+
+            list_of_all_array.append(eval(formul,dic))
+            nb_line.append(len(list_of_all_array[0]))
+        print("vecteur des nombre de ligne par colonne : ", nb_line)
+        nb_line_by_column = nb_line[0]
+        same_number_of_value = nb_line.count(nb_line_by_column)
+        try:
+            assert same_number_of_value == len(nb_line), \
+                "Les vecteurs colonnes représentant les donnees dans le temps doivent avoir le même nombre de donnees. Or, un ou plusieurs capteurs ont un nombre de donnees different des autres"
+        except AssertionError:
+            error_import_can.append("Les vecteurs colonnes représentant les donnees dans le temps doivent avoir le même nombre de donnees. Or, un ou plusieurs capteurs ont un nombre de donnees different des autres")
+            dico_all_error_message["import_can"] = error_import_can
+            fenetre_erreur(dico_all_error_message["import_can"],"import_can")
+            return None
+        
+        validate_all_entry()
+        if dico_all_error_message["invalide_entry"] != []:
+            fenetre_erreur(dico_all_error_message["invalide_entry"],"invalide_entry")
+            return None
+        
+        nb_column = len(nb_line)
+
+        adresse_sorted_complete = []
+        for ad_and_sens in associate_with_sensor_list :
+            adresse_sorted_complete.append((ad_and_sens[0],ad_and_sens[4]))
+
+        #print("all_sensor : ",adresse_sorted_complete)
+        number_of_line_in_csv = len(list_of_all_array[0])
+        #print("nombre de ligne : ",number_of_line_in_csv)
+
+
+        list_time = []
+        with open(data_csv, newline='') as csvfile:
+            for each_row in csvfile:
+                data_from_colum_0 = each_row.split(',')[0]
+                list_time.append(data_from_colum_0)
+                only_time = list_time[1:len(list_time)]
+        #print(only_time)
+
+        dictionnary_of_all_lines_in_csv_file = {}
+        for i in range(number_of_line_in_csv):
+            all_column_value = []
+            all_column_value.append(str(only_time[i]))
+            
+            for j in range(nb_column):
+                all_column_value.append(str(list_of_all_array[j][i]))
+            dictionnary_of_all_lines_in_csv_file["ligne %s"%(i+1)] = all_column_value
+        
+
+        
+
+        with open(export_data_converted, 'w', newline='') as csvfile:
+            sensor_list  = ["Time"]
+            for sensor_only in adresse_sorted_complete:
+                sensor_list.append(sensor_only[1])
+            fieldnames = sensor_list
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+            writer.writeheader()
+
+            dico_with_all_can_data_converted = {}
+            for i in range(nb_line[0]):
+                for j in range(len(adresse_sorted_complete)+1):
+                    dico_with_all_can_data_converted[sensor_list[j]] = dictionnary_of_all_lines_in_csv_file["ligne %s"%(i+1)][j]
+                #print(dico_with_all_can_data_converted)
+
+                writer.writerow(dico_with_all_can_data_converted)
+
+
+        print("Enregistrement effectué sans problème dans : %s"%("z_" + name_file_without_extention[0] +'_can_converti.csv'))
+    else:
+        print("action annulée")
+
+def validate_all_entry():
+    """
+    Cette fonction vérifie que:
+        1) Il y a quelque chose d'écris dans chaque entrées entrées manuel de l'interface
+
+        2) Aucun menu déroulant n'a été oublié
+
+        3) Les adresses entrées sont du bon format
+
+        4) le nombre de fonction dans l'interface et celui calculer dans le fichier correspond
+
+        5) les nombres de capteurs par fonction dans l'interface et ceux calculer dans le fichier correspondent
+
+    Lorsqu'il y a des erreur, les messages d'erreur sont enregistrés sous forme de list (invalide_entry) dans le dictionaire (dico_all_error_message) sous la clés ("invalide_entry")
+    
+    Cette fonction est appelée automatiquement lors de l'importation des données du CAN et lors de l'ouverture de la deuxième partie de l'interface.
+    """
     with open(dico_file_name["path_to_file"], "r") as f:
         data = json.load(f)
+    all_fonc_and_capt = get_all_capt()
+#   Cette partie sert au numéro 5) 
+    get_fonc = get_all_function()
+    nb_capt_by_fonc = {}
+    count_capt_by_fonc = 0
+#
+    for capt in all_fonc_and_capt:
+        fonc_desc = capt[0].split(" ")
+        fonc_num = fonc_desc[1]
+        capt_num = capt[1].split(" ")
+        list_all_func_until_now = list(nb_capt_by_fonc.keys())
+        if str(fonc_num) not in list_all_func_until_now:
+            count_capt_by_fonc = 0
+            nb_capt_by_fonc[str(fonc_num)] = count_capt_by_fonc
+        count_capt_by_fonc += 1
+        nb_capt_by_fonc[str(fonc_num)] = count_capt_by_fonc
+        all_info = data[capt[0]][capt[1]]
+        if data[capt[0]]["funcs_description"+"_%s"%(fonc_num)] == "(description)":
+            invalide_entry.append("Aucune description entrée pour la fonction %s"%(fonc_num))
+        if all_info["capts_description"] == "(description)":
+            invalide_entry.append("Aucune description entrée pour le capteur %s"%(capt_num[1]))
+        if all_info["can_adress"] == "adresse CAN":
+            invalide_entry.append("Aucune adresse CAN n'a été entrée pour le capteur %s"%(capt_num[1]))
+# Cette partie sert au numéro 3)
+        else:
+            adress = all_info["can_adress"]
+            if len(adress) != 10:
+                invalide_entry.append("Les adresses doivent être de 10 caratères et pas de %s, (capteur %s)"%(len(adress),capt_num[1]))
+            if adress[0:2] != "0x":
+                invalide_entry.append("Les adresses doivent commencées par 0x et pas par %s, (capteur %s)"%(adress[0:2],capt_num[1]))
+            if (adress[8:10] != "fd") and (adress[8:10] != "Fd") and (adress[8:10] != "fD") and (adress[8:10] != "FD"):
+                invalide_entry.append("Les adresses doivent terminées par [fd, Fd, fD, FD] et pas par %s, (capteur %s)"%(adress[8:10],capt_num[1]))
+            if adress[2:8].isnumeric() == False:
+                invalide_entry.append("Les adresses doivent êtres composées de 6 digits. L'adresse %s est invalide, (capteur %s)"%(adress[2:8],capt_num[1]))
+#
+        if all_info["type_channel"] == None:
+            invalide_entry.append("Aucun type de channel sélectionné pour le capteur %s"%(capt_num[1]))
+        elif all_info["type_channel"] == "Digital":
+            if (all_info["can_data"] == None) or (len(all_info["can_data"]) != 3):
+                invalide_entry.append("l'octets ou le bit associés aux messages du capteur %s n'a pas été entrée"%(capt_num[1]))
+        elif all_info["type_channel"] == "Analogique":
+            for i in range(2):
+                if (all_info["can_data"][i] == None):
+                    invalide_entry.append("le premier octet ou le dernier octet des messages du capteur %s n'a pas été entrée"%(capt_num[1]))
+            if all_info["range_type"] == "analog":
+                invalide_entry.append("le range du capteur %s n'a pas été entrée"%(capt_num[1]))
+
+        if all_info["value_of_100"] == "valeur de 100%":
+            invalide_entry.append("Aucune valeur de 100% n'a été entrée pour le capteur {}".format(capt_num[1]))
         
-    dic = {}
-    all_formul_list = []
-    for i in range(len(header_without_time)):
-        print(i)
-        dic[associate_with_sensor_list[i][4]] = my_data[i]
-        convert_bit_to_value = None
-        if associate_with_sensor_list[i][1][1] == "A":
-            find_bytes = associate_with_sensor_list[i][1][0]
-            nb_bytes = find_bytes.split('-')
-            nb_bytes = (int(nb_bytes[1]) - int(nb_bytes[0]))+1
-            nb_bit = 255**nb_bytes
-            analog_range = data[associate_with_sensor_list[i][2]][associate_with_sensor_list[i][3]]["range_type"]
-
-            if analog_range == "0 a 100%":
-                max_value = data[associate_with_sensor_list[i][2]][associate_with_sensor_list[i][3]]["value_of_100"]
-                if max_value.find(',') !=-1:
-                    convert_comma_to_dot = max_value.split(',')
-                    max_value = convert_comma_to_dot[0]+'.'+convert_comma_to_dot[1]
-                all_formul_list.append("(%s/%s)*%s"%(max_value,nb_bit,list(dic.keys())[i]))
-
-            elif analog_range == "-100 a 100%":
-                max_value = data[associate_with_sensor_list[i][2]][associate_with_sensor_list[i][3]]["value_of_100"]
-                if max_value.find(',') !=-1:
-                    convert_comma_to_dot = max_value.split(',')
-                    max_value = convert_comma_to_dot[0]+'.'+convert_comma_to_dot[1]
-                convert_bit_to_value = "((%s - %s)/%s)*%s"%(list(dic.keys())[i],nb_bit/2,nb_bit/2,max_value)
-                all_formul_list.append(convert_bit_to_value)
-            elif analog_range == "direct":
-                max_value = data[associate_with_sensor_list[i][2]][associate_with_sensor_list[i][3]]["value_of_100"]
-                convert_bit_to_value = list(dic.keys())[i]
-                all_formul_list.append(convert_bit_to_value)
-
-        elif associate_with_sensor_list[i][1][1] == "D":
-            max_value = data[associate_with_sensor_list[i][2]][associate_with_sensor_list[i][3]]["value_of_100"]
-            if max_value.find(',') !=-1:
-                    convert_comma_to_dot = max_value.split(',')
-                    max_value = convert_comma_to_dot[0]+'.'+convert_comma_to_dot[1]
-            all_formul_list.append("%s*%s"%(max_value,list(dic.keys())[i]))
-
-    list_of_all_array = []
-    nb_line = []
-    for formul in all_formul_list:
-
-        list_of_all_array.append(eval(formul,dic))
-        nb_line.append(len(list_of_all_array[0]))
-    print("vecteur des nombre de ligne par colonne : ", nb_line)
-    nb_line_by_column = nb_line[0]
-    same_number_of_value = nb_line.count(nb_line_by_column)
-    assert same_number_of_value == len(nb_line), \
-        "les vecteurs colonnes repréesntatant les donnees dans le temps doivent avoir le même nombre de donnees, or un ou plusieurs capteur on un nombre de donnée different des autres"
-    nb_column = len(nb_line)
-
-    adresse_sorted_complete = []
-    for ad_and_sens in associate_with_sensor_list :
-        adresse_sorted_complete.append((ad_and_sens[0],ad_and_sens[4]))
-
-    #print("all_sensor : ",adresse_sorted_complete)
-    number_of_line_in_csv = len(list_of_all_array[0])
-    #print("nombre de ligne : ",number_of_line_in_csv)
-
-
-    list_time = []
-    with open(data_csv, newline='') as csvfile:
-        for each_row in csvfile:
-            data_from_colum_0 = each_row.split(',')[0]
-            list_time.append(data_from_colum_0)
-            only_time = list_time[1:len(list_time)]
-    #print(only_time)
-
-    dictionnary_of_all_lines_in_csv_file = {}
-    for i in range(number_of_line_in_csv):
-        all_column_value = []
-        all_column_value.append(str(only_time[i]))
-        
-        for j in range(nb_column):
-            all_column_value.append(str(list_of_all_array[j][i]))
-        dictionnary_of_all_lines_in_csv_file["ligne %s"%(i+1)] = all_column_value
+# Cette partie sert au numéro 4)     
+    if len(get_fonc) != data["config_nb_func"]:
+        invalide_entry.append("Les nombres de fonction enregistré dans le fichier et détecté ne correspondent pas")
+# Cette partie sert au numéro 5)
+    nb_capt_by_all_fonc = list(nb_capt_by_fonc.keys())
+    for num_fonc in nb_capt_by_all_fonc:
+        if data["function "+num_fonc]["config_nb_sens"] != nb_capt_by_fonc[num_fonc]: 
+            invalide_entry.append("Les nombres de capteur enregistré dans le fichier et détecté ne correspondent pas pour la fonction %s"%(num_fonc))
     
+    dico_all_error_message["invalide_entry"]:invalide_entry
 
-    
-
-    with open(export_data_converted, 'w', newline='') as csvfile:
-        sensor_list  = ["Time"]
-        for sensor_only in adresse_sorted_complete:
-            sensor_list.append(sensor_only[1])
-        fieldnames = sensor_list
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-
-        writer.writeheader()
-
-        dico_with_all_can_data_converted = {}
-        for i in range(nb_line[0]):
-            for j in range(len(adresse_sorted_complete)+1):
-                dico_with_all_can_data_converted[sensor_list[j]] = dictionnary_of_all_lines_in_csv_file["ligne %s"%(i+1)][j]
-            #print(dico_with_all_can_data_converted)
-
-            writer.writerow(dico_with_all_can_data_converted)
-
-
-    print("Enregistrement effectué sans problème dans : %s"%("z_" + name_file_without_extention[0] +'_can_converti.csv'))
 
 def open_power_cycle_math():
 
-    interface_2.interface_part_2(dico_file_name["filename"])
+    get_all_entry()
 
+    no_error = True
+
+    if dico_all_error_message["for_rpi"] != []:
+        fenetre_erreur(dico_all_error_message["for_rpi"],"for_rpi")
+        no_error =False
+    if dico_all_error_message["import_can"] != []:
+        fenetre_erreur(dico_all_error_message["import_can"],"import_can")
+        no_error = False
+    if dico_all_error_message["assertions_partie_1"] != []:
+        fenetre_erreur(dico_all_error_message["assertions_partie_1"],"assertions_partie_1")
+        no_error = False
+  
+    validate_all_entry()
+    if dico_all_error_message["invalide_entry"] != []:
+        fenetre_erreur(dico_all_error_message["invalide_entry"],"invalide_entry")
+        no_error = False
     
+
+    if no_error == True:
+        interface_2.interface_part_2(dico_file_name["filename"],the_frame)
+    else:
+        print("La deuxième interface ne s'ouvrira pas avant que tous les bogs n'ait été résolu")
+
+def end_error_message(win,list):
+    dico_all_error_message[list].clear()
+    win.destroy()
+
+def fenetre_erreur(message_error_list,list):
+    
+    with open(dico_file_name["taille_interface_file"], "r") as f:
+        data_2 = json.load(f)
+    
+    #data_2['windows_scrol_height'] = int(h.get())
+    the_frame_level_2 = Toplevel(the_frame, height=data_2["windows_length"], width=data_2["windows_width"])   
+    text_box = Text(the_frame_level_2,height=int(data_2["windows_length"]/22), width=int(data_2["windows_width"]/12)) #Select title
+    #txt.grid(row = 0, column = 0)
+    text_box.place(x=0, y=0)
+    
+    text_box.insert(END, "Attention les erreurs suivantes sont survenues:")
+    text_box.insert(END,"\n")
+    text_box.insert(END,"\n")
+    for message in message_error_list:
+        text_box.insert(END, message)
+        text_box.insert(END,"\n")
+        text_box.insert(END,"\n")  
+    button = Button(the_frame_level_2, text="terminer", command=lambda : end_error_message(the_frame_level_2,list))
+
+    button.place(x=int((data_2["windows_width"]+data_2["windows_width"]/2)/2),y=0)
+
 def end_script():
+    get_all_entry()
     exit()
     
 today = datetime.datetime.now()
@@ -1662,7 +1992,7 @@ filemenu = Menu(selection_bar, tearoff=0)
 selection_bar.add_cascade(label="Fichier", menu=filemenu)
 filemenu.add_command(label="Nouvelle fonction", command=add_function)
 filemenu.add_command(label="Ouvrir...", command=select_file)
-filemenu.add_command(label="Enregistrer", command=get_all_entry)
+#filemenu.add_command(label="Enregistrer", command=get_all_entry)
 filemenu.add_command(label="Enregistrer sous...", command=save_in_to_file)
 filemenu.add_separator()
 filemenu.add_command(label="Nouvelle machine", command=add_machine)
@@ -1688,4 +2018,5 @@ tk.config(menu=selection_bar)
 #save_all_manual_entry_button.place(x=1200,y=60)
 #validate_button = Button(the_frame, text="Valider", command= lambda : convert_all_data(namefile[1]))
 #validate_button.place(x=1200,y=20)
+tk.protocol("WM_DELETE_WINDOW", end_script)
 tk.mainloop()
