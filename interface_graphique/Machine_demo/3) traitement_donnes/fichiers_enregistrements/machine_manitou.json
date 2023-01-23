@@ -1,0 +1,39 @@
+{
+      "all_paths": {
+            "part_1_json_name": "machine_manitou.json",
+            "part_2_json_name": "machine_manitou.json",
+            "name_of_the_interface_3_file": "machine_manitou.json",
+            "path_to_json_interface_part_1": "C:\\Users\\felix\\Desktop\\Design4\\design4_interface\\interface_graphique\\Machine_demo\\1) setup_donnees\\fichiers_enregistrements\\machine_manitou.json",
+            "path_to_json_interface_part_2": "C:\\Users\\felix\\Desktop\\Design4\\design4_interface\\interface_graphique\\Machine_demo\\2) calcul_puissance\\fichiers_enregistrements\\machine_manitou.json",
+            "path_to_json_traitement": "C:\\Users\\felix\\Desktop\\Design4\\design4_interface\\interface_graphique\\Machine_demo\\3) traitement_donnes\\fichiers_enregistrements\\default_machine_manitou_traitement_puissance_Jan_22_2023.json",
+            "path_to_taille_interface_3": "C:\\Users\\felix\\Desktop\\Design4\\design4_interface\\interface_graphique\\Machine_demo\\3) traitement_donnes\\fichiers_enregistrements\\z_taille_interface_3.json",
+            "path_to_converted_data_interface_Part_1": "C:\\Users\\felix\\Desktop\\Design4\\design4_interface\\interface_graphique\\Machine_demo\\1) setup_donnees\\fichiers_enregistrements\\z_machine_manitou_can_converti.csv",
+            "path_to_sous_cycle_data_interface_Part_2": "C:\\Users\\felix\\Desktop\\Design4\\design4_interface\\interface_graphique\\Machine_demo\\2) calcul_puissance\\fichiers_enregistrements\\z_machine_manitou_calcul_sous_cycle_puissance.csv",
+            "path_to_converted_cycle_puissance": "C:\\Users\\felix\\Desktop\\Design4\\design4_interface\\interface_graphique\\Machine_demo\\3) traitement_donnes\\fichiers_enregistrements\\z_machine_manitou_cycle_puissance_totale.csv",
+            "path_to_folder": "C:\\Users\\felix\\Desktop\\Design4\\design4_interface\\interface_graphique\\Machine_demo\\3) traitement_donnes\\fichiers_enregistrements\\",
+            "path_to_suppressed_cycle_file": "init",
+            "path_to_suppressed_sous_cycle_file": "init",
+            "path_fluxVideo": "C:/Users/felix/Desktop/Design4/design4_interface/interface_graphique/Machine_demo/donnees_recoltees_machine/11_23_2022/FluxVideo",
+            "path_camera_1": "C:/Users/felix/Desktop/Design4/design4_interface/interface_graphique/Machine_demo/donnees_recoltees_machine/11_23_2022/FluxVideo\\Camera1",
+            "path_camera_2": "C:/Users/felix/Desktop/Design4/design4_interface/interface_graphique/Machine_demo/donnees_recoltees_machine/11_23_2022/FluxVideo\\Camera2",
+            "path_to_gps_file": "C:/Users/felix/Desktop/Design4/design4_interface/interface_graphique/Machine_demo/donnees_recoltees_machine/11_23_2022/GPS.csv",
+            "Path_to_machine_folder": "C:\\Users\\felix\\Desktop\\Design4\\design4_interface\\interface_graphique\\Machine_demo",
+            "Path_to_interface_folder": "C:\\Users\\felix\\Desktop\\Design4\\design4_interface\\interface_graphique"
+      },
+      "calculs": "oui",
+      "affichage": "oui",
+      "photo_loader": "oui",
+      "gps_loader": "oui",
+      "project_name": "Groupe EP test",
+      "type_machine": "Machine Manitou",
+      "duree acquisiiton": [
+            "11-29-2022_14.52.14",
+            "11-29-2022_15.14.01"
+      ],
+      "Valeur_initiale_x_zoom": "1",
+      "valeur_finale_x_zoom": "9084",
+      "Date(s)": [
+            "11-29-2022"
+      ],
+      "facteur_echantillonnage": 1
+}

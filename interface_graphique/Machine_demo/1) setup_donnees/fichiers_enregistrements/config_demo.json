@@ -72,7 +72,7 @@
                   "num_capt": "func: 1. Capt: 8",
                   "capts_description": "pression 1B (Pt 1B)",
                   "type_channel": "Analogique",
-                  "can_adress": "0x180603FD",
+                  "can_adress": "0x180603Fd",
                   "can_data": [
                         "4",
                         "5"
@@ -121,7 +121,7 @@
                   "num_capt": "func: 2. Capt: 11",
                   "capts_description": "avant droite",
                   "type_channel": "Digital",
-                  "can_adress": "0x180600FD",
+                  "can_adress": "0x160600FD",
                   "can_data": "0b0",
                   "range_type": null,
                   "value_of_100": "35"
@@ -152,7 +152,7 @@
                   "num_capt": "func: 3. Capt: 3",
                   "capts_description": "valve",
                   "type_channel": "Analogique",
-                  "can_adress": "0x180605FD",
+                  "can_adress": "0x180605Fd",
                   "can_data": [
                         "0",
                         "1"

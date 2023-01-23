@@ -1,2 +1,2 @@
-python script_pythons\interface_graphique.py
+py -3 -m pip install -r requirements.txt
 PAUSE
