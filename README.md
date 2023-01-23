@@ -8,9 +8,9 @@ par :
 étudiants en Génie Électrique à l'université Laval
 
 ## Specifications
-- Le répertoire comprends des fichiers qui doivent être installé sur une Raspberry pi modèle 4B ainsi que des fichiers qui doivent être installés sur un ordinateur sur windows 10 ou 11 ayant git et python d'installé
+- Le répertoire comprend des fichiers qui doivent être installés sur un ordinateur sur Windows 10 ou 11 ayant git et python d'installé
 
-## Procédure pour cloner le repertoire sur l'ordinateur
+## Procédure pour cloner le répertoire sur l'ordinateur
 
  1) Assurez-vous que l'ordinateur utilise Windows 10 ou 11. Pour vérifier cette information. Aller dans paramètre. Sélectionnez Système et allez dans la section À propos.
 
@@ -27,15 +27,15 @@ par :
 
         python --version
 
-    Si python est installé, vous verrez quelque chose comme :
+    Si Python est installé, vous verrez quelque chose comme :
 
         Python 3.9.7
 
-4) Ouvrir un terminal et selectionner l'emplacement dans lequel vous desirer installer le répertoire en tappant dans le terminal:
+4) Ouvrir un terminal et sélectionner l'emplacement dans lequel vous désirez installer le répertoire en tapant dans le terminal:
 
         cd dossier1\sousdossier1\sousousdossier\...\emplacement
 
-5) Tapper ensuite les commandes suivantes:
+5) Taper ensuite les commandes suivantes:
 
         git clone 
     
@@ -45,8 +45,8 @@ par :
 
 6) La documentation pour l'interface graphique se trouve dans le dossier interface_graphique\Machine_demo\manuel_utilisation. . 
 
-- Vous pouvez l'ouvir en cliquant [ICI](./interface_graphique/Machine_demo/manuel_utilisation.pdf)
+- Vous pouvez l'ouvrir en cliquant [ICI](./interface_graphique/manuel_utilisation.pdf)
 
 6) La documentation pour l'installation du calculateur modifié se trouve dans le dossier: importation_datas_calculateur\manuel_utilisation.pdf. 
 
-- Vous pouvez l'ouvir en cliquant [ICI](./importation_datas_calculateur/manuel_utilisation.pdf)
+- Vous pouvez l'ouvrir en cliquant [ICI](./importation_datas_calculateur/manuel_utilisation.pdf)
