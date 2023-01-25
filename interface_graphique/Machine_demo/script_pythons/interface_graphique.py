@@ -13,7 +13,7 @@ from numpy import ndarray
 import calcul_cycle_puissace_interface as interface_2
 from distutils.dir_util import copy_tree
 
-DEBUG_MODE = True
+DEBUG_MODE = False # {False, True}
 
 
 new_machine_name = {"name_machine":""}
@@ -1679,7 +1679,7 @@ def convert_all_data():
                 find_bytes = associate_with_sensor_list[i][1][0]
                 nb_bytes = find_bytes.split('-')
                 nb_bytes = (int(nb_bytes[1]) - int(nb_bytes[0]))+1
-                nb_bit = 255**nb_bytes
+                nb_bit = 256**nb_bytes
                 analog_range = data[associate_with_sensor_list[i][2]][associate_with_sensor_list[i][3]]["range_type"]
 
                 if analog_range == "0 a 100%":

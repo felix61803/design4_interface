@@ -12,15 +12,19 @@ from numpy import ndarray
 import os
 import traitement_graphique as interface_3
 
+
 def interface_part_2(json_name_file,win_1):
 
+    DEBUG_MODE = False # {False, True}
+
+    if DEBUG_MODE == True:
+        print("L'interface partie 2 a été ouvert")
+
     space_next_sous_cycle = 60
-    #space_next_sens = 30
     init_nb_sous_cycle = 0
     init_config_y_sous_cycle = 60
     init_config_x_sous_cycle = [40, 120, 400, 530, 1050]
-    #init_config_y_sens = 60
-    #init_config_x_sens = [120, 200, 330, 430, 510, 645, 745, 810, 800, 910, 1040, 1170]
+
 
     dico_all_path = {"part_1_json_name": json_name_file, "name_of_the_interface_2_file": None, "path_to_json_interface_part_1":None, "path_to_json_calculs":None, "path_to_taille_interface_2":None, "path_to_converted_data_interface_Part_1":None, "path_to_converted_sous_cycle_puissance":None, "path_to_folder":None}
 
@@ -39,6 +43,9 @@ def interface_part_2(json_name_file,win_1):
     dico_all_error_message = {"assertions_partie_2":list_assertion,"calculer":list_error_calculer, "invalide_entry":invalide_entry,"indication":list_indication}
 
     def find_the_config_file_path(date):
+
+        if DEBUG_MODE == True:
+            print("La fonction find_the_config_file_path a été appelée")
 
         path_script = __file__
         to_list = path_script.split('\\')
@@ -61,6 +68,9 @@ def interface_part_2(json_name_file,win_1):
 
     def get_all_sous_cycle_from_file():
 
+        if DEBUG_MODE == True:
+            print("La fonction get_all_sous_cycle_from_file a été appelée")
+
         with open(dico_all_path["path_to_json_calculs"], "r") as f:
             data = json.load(f)
 
@@ -71,90 +81,14 @@ def interface_part_2(json_name_file,win_1):
                 list_all_sous_cycle.append(key)
         return list_all_sous_cycle
 
-#    def create_tkinter_widjet():
-#        with open(dico_all_path["path_to_json_calculs"], "r") as f:
-#            data = json.load(f)
-#        print("arriver dans la fonction create_tkinter_widjet")
-#        count_all_sens = 1
-#        for i in range(len(dico_funcs)):
-#            dico_funcs["Fonction %s"%(i+1)].place(x = data["config_x_place_sc"][0], y = data["config_y_place_sc"])
-#            dico_sous_cycle_description["sous_cycles_descriptions_%s"%(i+1)].place(x = data["config_x_place_sc"][1], y = data["config_y_place_sc"])
-#            dico_button_add_capts["button_fct_%s"%(i+1)].place(x=data["config_x_place_sc"][2],y=data["config_y_place_sc"])
-#            dico_button_delete_funcs["button_del_fct_%s"%(i+1)].place(x = data["config_x_place_sc"][3] , y = data["config_y_place_sc"])
-#            
-#            all_sens_only = []
-#            for sensors_by_fonc in list(dico_all_sensors["func_%s"%(i+1)].keys()):
-#                if "Capteur" in sensors_by_fonc:
-#                    all_sens_only.append(sensors_by_fonc)
-#            little_count = 1
-#            for sensors_by_fonc in all_sens_only:
-#                print(sensors_by_fonc)
-#                print(dico_all_sensors["func_%s"%(i+1)][sensors_by_fonc])
-#                dico_all_sensors["func_%s"%(i+1)][sensors_by_fonc].place(x=data["config_x_place_sens"][0],y=data["config_y_place_sens"]+space_next_sens+5)
-#
-#                num_sens = sensors_by_fonc.split(' ')
-#
-#                dico_capts_add_description["capts_description_%s"%(num_sens[1])].place(x=data["config_x_place_sens"][1],y=data["config_y_place_sens"]+space_next_sens+5)
-#                
-#                dico_all_sensors["func_%s"%(i+1)]["type_channel_sens_%s"%(num_sens[1])].place(x = data["config_x_place_sens"][2], y =data["config_y_place_sens"]+space_next_sens)
-#                dico_can_adresse["adress_%s"%(num_sens[1])].place(x = data["config_x_place_sens"][3], y =data["config_y_place_sens"]+space_next_sens+5)
-#                if data["function %s"%(i+1)]["sensor %s"%(num_sens[1])]["type_channel"] == "Analogique":
-#                    dico_nb_bit_by_bytes_analogique_menu_1["can_data_%s"%(num_sens[1])].place(x = data["config_x_place_sens"][4], y =data["config_y_place_sens"]+space_next_sens)
-#
-#                    dico_separator["sep_%s"%(num_sens[1])].place(x = data["config_x_place_sens"][4]+67, y =data["config_y_place_sens"]+space_next_sens+3)
-#
-#                    dico_nb_bit_by_bytes_analogique_menu_2["can_data_%s"%(num_sens[1])].place(x = data["config_x_place_sens"][4] + 80, y =data["config_y_place_sens"]+space_next_sens)
-#
-#                    dico_analogique_type_range["type_range_%s"%(num_sens[1])].place(x = data["config_x_place_sens"][5], y =data["config_y_place_sens"]+space_next_sens)
-#
-#                elif data["function %s"%(i+1)]["sensor %s"%(num_sens[1])]["type_channel"] == "Digital":
-#                    dico_bit_from_byte_digital["can_data_%s"%(num_sens[1])].place(x = data["config_x_place_sens"][4] + 90, y =data["config_y_place_sens"]+space_next_sens)
-#
-#                dico_all_sensors["func_%s"%(i+1)]["number_channel_sens_%s"%(num_sens[1])].place(x = data["config_x_place_sens"][6], y =data["config_y_place_sens"]+space_next_sens)
-#
-#                dico_value_of_100["max_val_%s"%(num_sens[1])].place(x = data["config_x_place_sens"][7], y =data["config_y_place_sens"]+space_next_sens+5)
-#
-#                dico_math_checkbutton["math_chekbutton_for_capt_%s"%(num_sens[1])][0].place(x = data["config_x_place_sens"][9], y =data["config_y_place_sens"]+space_next_sens+3)
-#                print(count_sensors(data))
-#                print(dico_math_label)
-#
-#                if data["function %s"%(i+1)]["sensor %s"%(num_sens[1])]["math"] != None:
-#                    dico_math_label["fonc_%s_capt_%s"%(i+1,num_sens[1])].place(x = data["config_x_place_sens"][10], y =data["config_y_place_sens"]+space_next_sens+3)
-#                    dico_math_equation["fonc_%s_capt_%s"%(i+1,num_sens[1])].place(x = data["config_x_place_sens"][11], y =data["config_y_place_sens"]+space_next_sens+3)
-#
-#                data["config_y_place_sens"] += space_next_sens
-#                data["config_y_place_sc"] = data["config_y_place_sens"] + space_next_sous_cycle
-#                    
-#                count_all_sens += 1
-#
-#                with open(namefile[1], "r") as f:
-#                    data_2 = json.load(f)
-#                if data["config_y_place_sc"]>= data_2["windows_scrol_height"]:
-#                    data_2["windows_scrol_height"] = data["config_y_place_sc"]
-#                    print("la scrollbar va jusqu'à : ", data_2["windows_scrol_height"])
-#                
-#                with open(namefile[1], "w") as file:
-#                    json.dump(data_2, file, indent = 6)
-#                
-#                with open(dico_all_path["path_to_json_calculs"], "w") as file:
-#                    json.dump(data, file, indent = 6)
-#                little_count += 1
-#            data["config_y_place_sens"] = data["config_y_place_sc"]
-#            with open(dico_all_path["path_to_json_calculs"], "w") as file:
-#                    json.dump(data, file, indent = 6)
-#
-#        lol = get_all_function()
-#        capt = get_all_capt()
-#        print("les fonctions", lol)
-#        print("les capteurs", capt)
-#
-#
-#
+
     def add_function():
+
+        if DEBUG_MODE == True:
+            print("La fonction add_function a été appelée")
 
         with open(dico_all_path["path_to_json_calculs"], "r") as f:
             data = json.load(f)
-            print(data)
             data['config_nb_sc'] = data["config_nb_sc"] + 1
 
         with open(dico_all_path["path_to_json_calculs"], "w") as file:
@@ -163,89 +97,28 @@ def interface_part_2(json_name_file,win_1):
         
         create_functions(data["config_nb_sc"],"new")
 
-    #def get_math_entry(event, num_cycle):
-    #    print("event : ",event)
-    #    with open(dico_all_path["path_to_json_calculs"], "r") as f:
-    #        data = json.load(f)
-#
-    #    mat_equation = dico_math_entry["math_entry_%s"%(num_cycle)].get()
-    #    print(mat_equation)
-    #    data['sous_cycle %s'%(num_cycle)]["math_entry_%s"%(num_cycle)] = mat_equation
-#
-    #    with open(dico_all_path["path_to_json_calculs"], "w") as file:
-    #        json.dump(data, file, indent = 6)
-#
-    #def get_desc_entry(event2, num_cycle):
-    #    print("yeeep")
-    #    print("event : ",event2)
-    #    with open(dico_all_path["path_to_json_calculs"], "r") as f:
-    #        data = json.load(f)
-#
-    #    desc = dico_sous_cycle_description["sous_cycles_descriptions_%s"%(num_cycle)].get()
-    #    print(desc)
-    #    data['sous_cycle %s'%(num_cycle)]["sous_cycles_descriptions_%s"%(num_cycle)] = desc
-#
-    #    with open(dico_all_path["path_to_json_calculs"], "w") as file:
-    #        json.dump(data, file, indent = 6)
-##
     def get_all_entry():
+
+        if DEBUG_MODE == True:
+            print("La fonction get_all_entry a été appelée")
         
         get_all_sous_cycle = get_all_sous_cycle_from_file()
-        print("entrer dans la fonction enregistrer")
 
         with open(dico_all_path["path_to_json_calculs"], "r") as f:
             data = json.load(f)
 
         for sous_cycle in get_all_sous_cycle:
             only_num = sous_cycle.split(' ')
-            lol2 = dico_sous_cycle_description["sous_cycles_descriptions_%s"%(only_num[1])].get()
-            print(lol2)
             data['sous_cycle %s'%(only_num[1])]["sous_cycles_descriptions_%s"%(only_num[1])]  = dico_sous_cycle_description["sous_cycles_descriptions_%s"%(only_num[1])].get()
-            lol = dico_math_entry["math_entry_%s"%(only_num[1])].get()
-            print(lol)
             data['sous_cycle %s'%(only_num[1])]["math_entry_%s"%(only_num[1])] = dico_math_entry["math_entry_%s"%(only_num[1])].get()
 
             with open(dico_all_path["path_to_json_calculs"], "w") as file:
                 json.dump(data, file, indent = 6)
-#        list_all_func = get_all_function()
-#        list_all_sens = get_all_capt()
-#        print("entrer dans la fonction enregistrer")
-#
-#        with open(dico_all_path["path_to_json_calculs"], "r") as f:
-#            data = json.load(f)
-#        
-#        for fct in list_all_func:
-#            number = fct.split(' ')
-#            desc = dico_sous_cycle_description["sous_cycles_descriptions_%s"%(number[1])].get()
-#            data[fct]["sous_cycles_descriptions_%s"%(number[1])] = desc
-#
-#            print(data[fct]["sous_cycles_descriptions_%s"%(number[1])])
-#
-#        for fct_and_capt in list_all_sens:
-#            number_fct = fct_and_capt[0].split(' ')
-#            number_capt = fct_and_capt[1].split(' ')
-#            desc_capt = dico_capts_add_description["capts_description_%s"%(number_capt[1])].get()
-#            data[fct_and_capt[0]][fct_and_capt[1]]["capts_description"] = desc_capt
-#
-#            print(data[fct_and_capt[0]][fct_and_capt[1]]["capts_description"])
-#
-#            
-#            data[fct_and_capt[0]][fct_and_capt[1]]["can_adress"] = dico_can_adresse["adress_%s"%(number_capt[1])].get()
-#
-#            data[fct_and_capt[0]][fct_and_capt[1]]["value_of_100"] = dico_value_of_100["max_val_%s"%(number_capt[1])].get()
-#
-#            if dico_math_checkbutton["math_chekbutton_for_capt_%s"%(number_capt[1])][1].get() == 1:
-#                data[fct_and_capt[0]][fct_and_capt[1]]["math"] = dico_math_equation["fonc_%s_capt_%s"%(number_fct[1],number_capt[1])].get()
-#                if dico_math_equation["fonc_%s_capt_%s"%(number_fct[1],number_capt[1])].get() == '':
-#                    data[fct_and_capt[0]][fct_and_capt[1]]["math"] = 'yes'
-#            if dico_math_checkbutton["math_chekbutton_for_capt_%s"%(number_capt[1])][1].get() == 0:
-#                data[fct_and_capt[0]][fct_and_capt[1]]["math"] = None
-#            
-#            print(data[fct_and_capt[0]][fct_and_capt[1]]["math"])
-#            with open(dico_all_path["path_to_json_calculs"], "w") as file:
-#                json.dump(data, file, indent = 6)
     
     def function_from_file():
+
+        if DEBUG_MODE == True:
+            print("La fonction function_from_file a été appelée")
 
         get_all_sous_cycle = get_all_sous_cycle_from_file()
         
@@ -254,9 +127,7 @@ def interface_part_2(json_name_file,win_1):
         dico_math_entry_label.clear()
         dico_math_entry.clear
         dico_button_math_validate.clear()
-#    
-#        
-#
+
         with open(dico_all_path["path_to_json_calculs"], "r") as f:
             data = json.load(f)
         
@@ -269,22 +140,22 @@ def interface_part_2(json_name_file,win_1):
 
         for sc in get_all_sous_cycle:
             number = sc.split(" ")
-            #print('all fonctions : fonction ',number)
+
             create_functions(number[1],"open")
-#
+
         try:
             assert len(get_all_sous_cycle) == data["config_nb_sc"], \
                 "Les nombres de sous-cycles enregistré dans le fichier et détecté ne correspondent pas"
         except AssertionError:
             list_assertion.append("Les nombres de sous-cycles enregistré dans le fichier et détecté ne correspondent pas")
             dico_all_error_message["assertions_partie_2"] = list_assertion
-#
-        
-
-#        create_tkinter_widjet()
 
 
     def print_data_and_calculate(num,obj_line, win):
+
+        if DEBUG_MODE == True:
+            print("La fonction print_data_and_calculate a été appelée")
+
         try:
             dico_warning_line["selected_line"].destroy()
 
@@ -298,10 +169,7 @@ def interface_part_2(json_name_file,win_1):
             pass
 
         line = obj_line.get()
-        #print("Sous Cycle : %s, affiche ligne : %s"%(num, line))
         (header,column) = get_all_column()
-        #print(header)
-        #
            
         try:
             list_data_line = []
@@ -309,25 +177,13 @@ def interface_part_2(json_name_file,win_1):
             for sensor in header:
                 list_data_line.append(column[sensor][int(line)-1])
                 dico_calcul[sensor] = column[sensor][int(line)-1]
-            #print(header)
-            #print(list_data_line)
-           # print("dico : ",dico_calcul )
+
             with open(dico_all_path["path_to_json_calculs"], "r") as f:
                 data = json.load(f)
-
-            #new_frame = Frame(win)
-            #new_frame.pack(expand=TRUE, fill = BOTH)
-           # new_frame.grid(row = 3, column = 0)
-
-            #scrollx = Scrollbar(win, orient = HORIZONTAL)
-            #scrollx.grid(row=4, column=0)
             
-
             txt = Text(win)
             dico_validate_calcul_windows["test_box_validate_calcul"] = txt 
             txt.grid(row = 3, column = 0, padx = 30,pady =10)
-
-            #scrollx.config(command = txt.xview)
 
             txt.insert(END, header)
             txt.insert(END,"\n")
@@ -337,11 +193,7 @@ def interface_part_2(json_name_file,win_1):
             txt.insert(END,"Equation :    %s"%(data["sous_cycle %s"%(num)]["math_entry_%s"%(num)]))
             txt.insert(END,"\n")
             txt.insert(END,"\n")
-            txt.insert(END,"Resultat :    %s"%(eval(data["sous_cycle %s"%(num)]["math_entry_%s"%(num)],dico_calcul)))
-            
-
-            
-
+            txt.insert(END,"Resultat :    %s"%(eval(data["sous_cycle %s"%(num)]["math_entry_%s"%(num)],dico_calcul)))       
 
         except IndexError:
             val = Label(win, text="Attention : le fichier ne comporte que %s lignes"%(len(column[header[0]])))
@@ -355,7 +207,9 @@ def interface_part_2(json_name_file,win_1):
                 pass
 
     def validate_calcul(number):
-        print("yolo %s"%(number))
+        
+        if DEBUG_MODE == True:
+            print("La fonction validate_calcul a été appelée")
 
         get_all_entry()
 
@@ -372,86 +226,69 @@ def interface_part_2(json_name_file,win_1):
 
 
     def create_functions(num_sous_cycle, coming_from):
+
+        if DEBUG_MODE == True:
+            print("La fonction create_functions a été appelée")
         
         if coming_from == "new":
 
-            print("La fonction %s à bien été appelée"%(num_sous_cycle))
+            if DEBUG_MODE == True:
+                print("La fonction %s à bien été appelée"%(num_sous_cycle))
+
             with open(dico_all_path["path_to_json_calculs"], "r") as f:
                 data = json.load(f)
-            print(data)
 
             name_french = "Sous cycle %s"%(num_sous_cycle)
-            name = Label(the_frame,text=name_french,fg="white",bg="blue") #Select title
+            name = Label(the_frame,text=name_french,fg="white",bg="blue")
             dico_funcs[name_french] = name
-            print(dico_funcs)
             dico_funcs[name_french].place(x = data["config_x_place_sc"][0], y = data["config_y_place_sc"])
 
             funcs_add_description = Entry(the_frame, width=40)
             funcs_add_description.insert(0,'(description)')
             dico_sous_cycle_description["sous_cycles_descriptions_%s"%(num_sous_cycle)] = funcs_add_description
-            #dico_sous_cycle_description["sous_cycles_descriptions_%s"%(num_sous_cycle)].bind("<Leave>", lambda event2: get_desc_entry(event2, num_sous_cycle))
             dico_sous_cycle_description["sous_cycles_descriptions_%s"%(num_sous_cycle)].place(x=data["config_x_place_sc"][1],y=data["config_y_place_sc"])
-#
-            desc_math_entry_label = Label(the_frame,text="Entrez l'expression: ",fg="white",bg="blue") #Select title
+
+            desc_math_entry_label = Label(the_frame,text="Entrez l'expression: ",fg="white",bg="blue")
             dico_math_entry_label["desc_sous_cycle_%s"%(num_sous_cycle)] = desc_math_entry_label
-            print(dico_math_entry_label)
             dico_math_entry_label["desc_sous_cycle_%s"%(num_sous_cycle)].place(x = data["config_x_place_sc"][2], y = data["config_y_place_sc"])
-#
+
             math_entry = Entry(the_frame, width=75)
             dico_math_entry["math_entry_%s"%(num_sous_cycle)] = math_entry
-            #dico_math_entry["math_entry_%s"%(num_sous_cycle)].bind("<Leave>", lambda event: get_math_entry(event, num_sous_cycle))
             dico_math_entry["math_entry_%s"%(num_sous_cycle)].place(x=data["config_x_place_sc"][3],y=data["config_y_place_sc"])
 
             button_test_calcul = Button(the_frame, text="Valider", command=lambda : validate_calcul(num_sous_cycle))
             dico_button_math_validate["button_math_validate_%s"%(num_sous_cycle)] = button_test_calcul
             dico_button_math_validate["button_math_validate_%s"%(num_sous_cycle)].place(x=data["config_x_place_sc"][4],y=data["config_y_place_sc"])
-#
-            #button_add_sensors = Button(the_frame, text="Ajouter un capt (1)", command= lambda : add_sensors(num_sous_cycle,"new"))
-            #dico_button_add_capts["button_fct_%s"%(num_sous_cycle)] = button_add_sensors
-            #print(dico_button_add_capts)
-            #dico_button_add_capts["button_fct_%s"%(num_sous_cycle)].place(x=data["config_x_place_sc"][2],y=data["config_y_place_sc"])
-            #print("save_button : ", dico_button_add_capts["button_fct_%s"%(num_sous_cycle)])
-            #button_delete_function = Button(the_frame, text="Supprimer la fonc (1)", command= lambda : delete_functions(num_sous_cycle))
-            #dico_button_delete_funcs["button_del_fct_%s"%(num_sous_cycle)] = button_delete_function
-            #print(dico_button_delete_funcs)
-            #dico_button_delete_funcs["button_del_fct_%s"%(num_sous_cycle)].place(x = data["config_x_place_sc"][3] , y = data["config_y_place_sc"])
+
             data['sous_cycle %s'%(num_sous_cycle)] = {"sous_cycles_descriptions_%s"%(num_sous_cycle): "(description)",
                                                     "math_entry_%s"%(num_sous_cycle): ""}
             data["config_y_place_sc"] += 60
-            #data["config_y_place_sens"] += 90
                 
 
             with open(dico_all_path["path_to_json_calculs"], 'w') as file:
                 json.dump(data, file, indent = 6)
-
-
-            #add_sensors(num_sous_cycle, coming_from)
 
         elif coming_from == "open":
             with open(dico_all_path["path_to_json_calculs"], "r") as f:
                 data = json.load(f)
             
             name_french = "Sous cycle %s"%(num_sous_cycle)
-            name = Label(the_frame,text=name_french ,fg="white",bg="blue") #Select title
+            name = Label(the_frame,text=name_french ,fg="white",bg="blue")
             dico_funcs[name_french] = name
-            #print(dico_funcs)
             dico_funcs[name_french].place(x = data["config_x_place_sc"][0], y = data["config_y_place_sc"])
 
             funcs_add_description = Entry(the_frame, width=40)
             funcs_add_description.insert(0,data["sous_cycle %s"%(num_sous_cycle)]["sous_cycles_descriptions_%s"%(num_sous_cycle)])
             dico_sous_cycle_description["sous_cycles_descriptions_%s"%(num_sous_cycle)] = funcs_add_description
-            #dico_sous_cycle_description["sous_cycles_descriptions_%s"%(num_sous_cycle)].bind("<Leave>", lambda event2: get_desc_entry(event2, num_sous_cycle))
             dico_sous_cycle_description["sous_cycles_descriptions_%s"%(num_sous_cycle)].place(x=data["config_x_place_sc"][1],y=data["config_y_place_sc"])
 
-            desc_math_entry_label = Label(the_frame,text="Entrez l'expression: ",fg="white",bg="blue") #Select title
+            desc_math_entry_label = Label(the_frame,text="Entrez l'expression: ",fg="white",bg="blue")
             dico_math_entry_label["desc_sous_cycle_%s"%(num_sous_cycle)] = desc_math_entry_label
-            print(dico_math_entry_label)
             dico_math_entry_label["desc_sous_cycle_%s"%(num_sous_cycle)].place(x = data["config_x_place_sc"][2], y = data["config_y_place_sc"])
 
             math_entry = Entry(the_frame, width=75)
             math_entry.insert(0,data["sous_cycle %s"%(num_sous_cycle)]["math_entry_%s"%(num_sous_cycle)])
             dico_math_entry["math_entry_%s"%(num_sous_cycle)] = math_entry
-            #dico_math_entry["math_entry_%s"%(num_sous_cycle)].bind("<Leave>", lambda event: get_math_entry(event, num_sous_cycle))
             dico_math_entry["math_entry_%s"%(num_sous_cycle)].place(x=data["config_x_place_sc"][3],y=data["config_y_place_sc"])
 
             button_test_calcul = Button(the_frame, text="Valider", command=lambda : validate_calcul(num_sous_cycle))
@@ -465,8 +302,10 @@ def interface_part_2(json_name_file,win_1):
 
     def select_file():
 
+        if DEBUG_MODE == True:
+            print("La fonction select_file a été appelée")
+
         filetypes = (('text files', '*.json'),('All files', '*.*'))
-        print(dico_all_path["path_to_json_calculs"])
         filename = fd.askopenfilename(initialfile=dico_all_path["part_1_json_name"],title='Open a file',initialdir=dico_all_path["path_to_folder"],filetypes=filetypes)
         list_str = filename.split("/")
         only_name = list_str[len(list_str)-1]
@@ -484,7 +323,6 @@ def interface_part_2(json_name_file,win_1):
         today_format = today.strftime("%b_%d_%Y")
         interface_part_1_file_name = dico_all_path["part_1_json_name"].split('.json')
         name_default = "default_" + interface_part_1_file_name[0] + "_calcul_puissance_" + today_format + ".json"
-        print(name_default == dico_all_path["name_of_the_interface_2_file"])
         
         default_file = None
         if name_default == dico_all_path["name_of_the_interface_2_file"]:
@@ -520,13 +358,15 @@ def interface_part_2(json_name_file,win_1):
 
     def save_in_to_file():
 
+        if DEBUG_MODE == True:
+            print("La fonction save_in_to_file a été appelée")
+
         get_all_entry()
 
         today = datetime.datetime.now()
         today_format = today.strftime("%b_%d_%Y")
         interface_part_1_file_name = dico_all_path["part_1_json_name"].split('.json')
         name_default = "default_" + interface_part_1_file_name[0] + "_calcul_puissance_" + today_format + ".json"
-        print(name_default == dico_all_path["name_of_the_interface_2_file"])
         
         default_file = None
         if name_default == dico_all_path["name_of_the_interface_2_file"]:
@@ -561,13 +401,17 @@ def interface_part_2(json_name_file,win_1):
 
     def adjust_windows(path_of_taille_file,windows_height_x,windows_height_y):
 
+        if DEBUG_MODE == True:
+            print("La fonction adjust_windows a été appelée")
+
         with open(path_of_taille_file, 'r') as f:
             data_taille = json.load(f)
-
-        print(windows_height_x)
-        print(windows_height_y)
-        print(data_taille["windows_width"])
-        print(data_taille["windows_length"])
+        
+        if DEBUG_MODE == True:
+            print(windows_height_x)
+            print(windows_height_y)
+            print(data_taille["windows_width"])
+            print(data_taille["windows_length"])
         
         the_frame_part_2 = Toplevel(the_frame)    
         the_frame_part_2.minsize(data_taille["windows_width"], data_taille["windows_length"])
@@ -587,8 +431,13 @@ def interface_part_2(json_name_file,win_1):
         button2.grid(row = 1, column = 2, padx = 30, pady =10)
 
     def get_ent_button_level_2(name_file,l,h,frame_level_2):
-        print(l.get())
-        print(h.get())
+
+        if DEBUG_MODE == True:
+            print("La fonction get_ent_button_level_2 a été appelée")
+
+            print(l.get())
+            print(h.get())
+
         with open(name_file, "r") as f:
             data_2 = json.load(f)
         data_2['windows_width'] = int(l.get())
@@ -600,12 +449,20 @@ def interface_part_2(json_name_file,win_1):
         frame_level_2.destroy()
 
     def get_ent_button2_level_2(l,h,x,y):
+
+        if DEBUG_MODE == True:
+            print("La fonction get_ent_button2_level_2 a été appelée")
+
         l.delete(0,END)
         h.delete(0,END)
         l.insert(0,x)
         h.insert(0,y)
     
     def ajust_height_scorlbar(name_file,y_def):
+
+        if DEBUG_MODE == True:
+            print("La fonction ajust_height_scorlbar a été appelée")
+
         with open(name_file, "r") as f:
             data_2 = json.load(f)
         the_frame_level_2 = Toplevel(the_frame, padx=125, pady=130)    
@@ -621,7 +478,11 @@ def interface_part_2(json_name_file,win_1):
         button2.grid(row = 0, column = 2, padx = 30, pady =10)
 
     def get_scrol_ent_button_level_2(name_file,h,frame_level_2):
-        print(h.get())
+
+        if DEBUG_MODE == True:
+            print("La fonction get_scrol_ent_button_level_2 a été appelée")
+
+            print(h.get())
         with open(name_file, "r") as f:
             data_2 = json.load(f)
         data_2['windows_scrol_height'] = int(h.get())
@@ -632,10 +493,17 @@ def interface_part_2(json_name_file,win_1):
         frame_level_2.destroy()
 
     def get_scrol_ent_button2_level_2(h,y):
+
+        if DEBUG_MODE == True:
+            print("La fonction get_scrol_ent_button2_level_2 a été appelée")
+
         h.delete(0,END)
         h.insert(0,y)
 
     def get_all_column():
+
+        if DEBUG_MODE == True:
+            print("La fonction get_all_column a été appelée")
 
         with open(dico_all_path["path_to_converted_data_interface_Part_1"], newline='') as csvfile:
             reader = csv.DictReader(csvfile)
@@ -644,7 +512,7 @@ def interface_part_2(json_name_file,win_1):
         header_without_time = header[1:len(header)]
 
         my_data = genfromtxt(dico_all_path["path_to_converted_data_interface_Part_1"], delimiter=',', names=True, usecols=tuple(header_without_time), unpack=True)
-        #print(my_data)
+
         dic = {}
         if type(my_data[0]) == ndarray:
             for i in range(len(header_without_time)):
@@ -656,8 +524,10 @@ def interface_part_2(json_name_file,win_1):
 
     
     def validate_all_entry():
-        """
-        """
+
+        if DEBUG_MODE == True:
+            print("La fonction validate_all_entry a été appelée")
+
         with open(dico_all_path["path_to_json_calculs"], "r") as f:
             data = json.load(f)
         all_sous_cycle = get_all_sous_cycle_from_file()
@@ -671,14 +541,17 @@ def interface_part_2(json_name_file,win_1):
                 invalide_entry.append("Aucune description entrée pour le sous cycle %s"%(sous_cycle_num))
             if (all_info["math_entry"+"_%s"%(sous_cycle_num)] == "") or (all_info["math_entry"+"_%s"%(sous_cycle_num)] == " "):
                 invalide_entry.append("Aucune équation entrée pour le sous cycle %s"%(sous_cycle_num))
-            
-    # Cette partie sert au numéro 4)     
+                
         if len(all_sous_cycle) != data["config_nb_sc"]:
             invalide_entry.append("Les nombres de fonction enregistré dans le fichier et détecté ne correspondent pas")
            
         dico_all_error_message["invalide_entry"]:invalide_entry
 
     def calculate_sous_cycle_power():
+
+        if DEBUG_MODE == True:
+            print("La fonction calculate_sous_cycle_power a été appelée")
+
 
         get_all_entry()
 
@@ -687,12 +560,7 @@ def interface_part_2(json_name_file,win_1):
             fenetre_erreur(dico_all_error_message["invalide_entry"],"invalide_entry")
             return None
         (list_all_sensor, dico_with_all_column) = get_all_column()
-        #print(dico_with_all_column)
-        list_all_sous_cycle = get_all_sous_cycle_from_file()
-        #print(list_all_sous_cycle)
-        
-
-
+        list_all_sous_cycle = get_all_sous_cycle_from_file()      
 
         with open(dico_all_path["path_to_json_calculs"], "r") as f:
             data = json.load(f)
@@ -702,20 +570,18 @@ def interface_part_2(json_name_file,win_1):
         for sous_cycle in list_all_sous_cycle:
             num_only = sous_cycle.split(' ')
             equation = data[sous_cycle]["math_entry_%s"%(num_only[1])]
-            #print(equation)
 
             array_coverted_value = eval(equation,dico_with_all_column)
             list_of_all_array.append(array_coverted_value)
             dico_with_converted_value[sous_cycle] = array_coverted_value
 
-        #print(dico_with_converted_value)
-
         nb_line = []
         for key in list(dico_with_converted_value.keys()):
             nb_line.append(len(dico_with_converted_value[key]))
-            print(nb_line)
 
-        print("vecteur des nombre de ligne par colonne : ", nb_line)
+        if DEBUG_MODE == True:
+            print("vecteur des nombre de ligne par colonne : ", nb_line)
+
         nb_line_by_column = nb_line[0]
         same_number_of_value = nb_line.count(nb_line_by_column)
 
@@ -736,9 +602,6 @@ def interface_part_2(json_name_file,win_1):
                 data_from_colum_0 = each_row.split(',')[0]
                 list_time.append(data_from_colum_0)
                 only_time = list_time[1:len(list_time)]
-        #print(only_time)
-
-        #print(only_time)
 
         dictionnary_of_all_lines_in_csv_file = {}
         for i in range(nb_line[0]):
@@ -748,9 +611,6 @@ def interface_part_2(json_name_file,win_1):
             for j in range(nb_column):
                 all_column_value.append(str(list_of_all_array[j][i]))
             dictionnary_of_all_lines_in_csv_file["ligne %s"%(i+1)] = all_column_value
-
-
-        #print(dictionnary_of_all_lines_in_csv_file)
 
         with open(dico_all_path["path_to_converted_sous_cycle_puissance"], 'w', newline='') as csvfile:
             head_list  = ["Time"]
@@ -776,13 +636,11 @@ def interface_part_2(json_name_file,win_1):
         
         print("Enregistrement effectué sans problème dans : ", dico_all_path["path_to_converted_sous_cycle_puissance"])
 
-
-    
-
-
     def interface_part_3():
-        #print(dico_all_path["part_1_json_name"])
-        #print(dico_all_path["name_of_the_interface_2_file"])
+
+        if DEBUG_MODE == True:
+            print("La fonction ouvre l'interface partie 3")
+
         get_all_entry()
 
         no_error = True
@@ -809,21 +667,26 @@ def interface_part_2(json_name_file,win_1):
         
         
     def end_error_message(win,list):
+
+        if DEBUG_MODE == True:
+            print("La fonction end_error_message a été appelée")
+
         dico_all_error_message[list].clear()
         win.destroy()
 
     def fenetre_erreur(message_error_list,list,win1=None,is_indication=False):
+
+        if DEBUG_MODE == True:
+            print("La fonction fenetre_erreur a été appelée")
         
         with open(dico_all_path["path_to_taille_interface_2"], "r") as f:
             data_2 = json.load(f)
         
-        #data_2['windows_scrol_height'] = int(h.get())
         select_frame = the_frame 
         if win1 != None:
             select_frame = win1
         the_frame_level_2 = Toplevel(select_frame, height=data_2["windows_length"], width=data_2["windows_width"])   
-        text_box = Text(the_frame_level_2,height=int(data_2["windows_length"]/22), width=int(data_2["windows_width"]/12)) #Select title
-        #txt.grid(row = 0, column = 0)
+        text_box = Text(the_frame_level_2,height=int(data_2["windows_length"]/22), width=int(data_2["windows_width"]/12))
         text_box.place(x=0, y=0)
 
         if is_indication == False:
@@ -840,6 +703,8 @@ def interface_part_2(json_name_file,win_1):
 
     def delete_widgets():
 
+        if DEBUG_MODE == True:
+            print("La fonction delete_widgets a été appelée")
 
         with open(dico_all_path["path_to_json_calculs"], "r") as f:
             data = json.load(f)
@@ -877,10 +742,14 @@ def interface_part_2(json_name_file,win_1):
 
         function_from_file()
 
-
     def end_script():
+
+        if DEBUG_MODE == True:
+            print("La fonction end_script a été appelée")
+
         get_all_entry()
         exit()
+
     windows_height_x = int(GetSystemMetrics(0))-20
     windows_height_y = int(GetSystemMetrics(1))-150
     windows_scrol_height = int(GetSystemMetrics(1))
@@ -900,7 +769,7 @@ def interface_part_2(json_name_file,win_1):
 
     try:
         with open(dico_all_path["path_to_json_interface_part_1"], 'r') as f:
-            print("ok")
+            pass
 
     except json.JSONDecodeError:
         try:
@@ -920,7 +789,7 @@ def interface_part_2(json_name_file,win_1):
 
     try:
         with open(dico_all_path["path_to_converted_data_interface_Part_1"], 'r') as f:
-            print("ok")
+            pass
 
     except json.JSONDecodeError:
         try:
@@ -950,7 +819,6 @@ def interface_part_2(json_name_file,win_1):
             }
         with open(dico_all_path["path_to_json_calculs"], 'w') as file:
             json.dump(dico, file, indent = 6)
-            print('yes')
 
     except json.JSONDecodeError:
         print("fichier vide, introuvable ou corrompu!")
@@ -977,7 +845,7 @@ def interface_part_2(json_name_file,win_1):
 
     try:
         with open(dico_all_path["path_to_taille_interface_2"], 'r') as f:
-            print("ok")
+            pass
 
     except json.JSONDecodeError:
         dico_taille = {'windows_width': windows_height_x,
@@ -994,24 +862,6 @@ def interface_part_2(json_name_file,win_1):
 
         with open(dico_all_path["path_to_taille_interface_2"], 'w') as file:
             json.dump(dico_taille, file, indent = 6)
-
-
-#test pour importer le fichier voulu
-    
-    #with open(dico_all_path["path_to_json_interface_part_1"], 'r') as f:
-    #    data = json.load(f)
-    #print(data)
-
-#test pour aller chercher le fichier voulu
-
-    #with open(dico_all_path["path_to_converted_data_interface_Part_1"], newline='') as csvfile:
-    #    reader = csv.DictReader(csvfile)
-    #    header = reader.fieldnames
-    #print(header)
-
-
-
-
     
     tk = Tk()
     tk.title("Python Tkinter")
@@ -1054,8 +904,6 @@ def interface_part_2(json_name_file,win_1):
     #filemenu.add_command(label="Enregistrer", command=get_all_entry)
     filemenu.add_command(label="Enregistrer sous...", command=save_in_to_file)
     filemenu.add_separator()
-    #filemenu.add_command(label="Exportation pour RPI", command=export_data_for_rpi)
-    #filemenu.add_separator()
     filemenu.add_command(label="Fermer", command=end_script)
 
     filemenu2 = Menu(selection_bar, tearoff=0)
@@ -1069,14 +917,13 @@ def interface_part_2(json_name_file,win_1):
     filemenu3.add_separator()
     filemenu3.add_command(label="Ouvrir interface pour traitement", command=interface_part_3)
     filemenu3.add_separator()
-    #filemenu3.add_command(label="Importer le can", command= lambda : convert_all_data(namefile[1]))
 
     tk.config(menu=selection_bar)
     save_all_manual_entry_button = Button(the_frame, text="Calculer", command=calculate_sous_cycle_power)
     save_all_manual_entry_button.place(x=1200,y=60)
     #validate_button = Button(the_frame, text="Valider", command= lambda : convert_all_data(namefile[1]))
     #validate_button.place(x=1200,y=20)
-    print(dico_all_error_message["assertions_partie_2"])
+
     if dico_all_error_message["assertions_partie_2"] != []:
         fenetre_erreur(dico_all_error_message["assertions_partie_2"],"assertions_partie_2", win_1)
         tk.destroy()
